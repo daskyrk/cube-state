@@ -1,0 +1,94 @@
+{
+  "name": "cube-state",
+  "version": "1.0.0",
+  "description": "state management library based on React Hooks",
+  "main": "dist/index.js",
+  "module": "dist/index.es.js",
+  "scripts": {
+    "tsc": "rimraf dist/* && tsc",
+    "min": "terser dist/index.js -o dist/index.min.js",
+    "build": "rimraf dist/* && rollup -c && npm run min",
+    "build:watch": "rimraf dist/* && rollup -c -w",
+    "format": "prettier --write \"src/**/*.{js,ts,tsx}\"",
+    "format:check": "prettier --list-different \"src/**/*.{js,ts,tsx}\"",
+    "lint": "tslint -c tslint.json \"src/**/*.{ts,tsx}\"",
+    "lint:fix": "tslint -c tslint.json \"src/**/*.{ts,tsx}\" --fix",
+    "test": "jest",
+    "test:watch": "jest --watch",
+    "coveralls": "jest --coverage && cat ./coverage/lcov.info | ./node_modules/coveralls/bin/coveralls.js && rm -rf ./coverage",
+    "release": "standard-version"
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "lint-staged",
+      "commit-msg": "commitlint -E HUSKY_GIT_PARAMS"
+    }
+  },
+  "lint-staged": {
+    "{src,__tests__}/*.{js,ts,tsx}": [
+      "npm run format",
+      "npm run lint:fix",
+      "git add"
+    ]
+  },
+  "commitlint": {
+    "extends": [
+      "@commitlint/config-conventional"
+    ]
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/daskyrk/cube-state.git"
+  },
+  "keywords": [
+    "react",
+    "state",
+    "management",
+    "hooks"
+  ],
+  "author": "daskyrk",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/daskyrk/cube-state/issues"
+  },
+  "homepage": "https://github.com/daskyrk/cube-state#readme",
+  "dependencies": {
+    "fast-deep-equal": "^2.0.1",
+    "immer": "^4.0.0"
+  },
+  "peerDependencies": {
+    "react": "^16.10.1",
+    "react-dom": "^16.10.1"
+  },
+  "devDependencies": {
+    "@commitlint/cli": "^7.5.2",
+    "@commitlint/config-conventional": "^7.5.0",
+    "@types/enzyme": "^3.9.0",
+    "@types/graphql": "^14.0.7",
+    "@types/jest": "^24.0.15",
+    "@types/react": "^16.8.6",
+    "@types/react-dom": "^16.8.2",
+    "@types/react-test-renderer": "^16.8.1",
+    "babel-jest": "^24.9.0",
+    "coveralls": "^3.0.6",
+    "husky": "^3.0.8",
+    "jest": "24.9.0",
+    "lint-staged": "^9.4.1",
+    "prettier": "^1.18.2",
+    "react": "^16.8.3",
+    "react-dom": "^16.8.3",
+    "react-test-renderer": "16.10.1",
+    "rimraf": "^3.0.0",
+    "rollup": "^1.22.0",
+    "rollup-plugin-typescript2": "^0.24.3",
+    "standard-version": "^7.0.0",
+    "terser": "^4.3.4",
+    "ts-jest": "^24.1.0",
+    "tslint": "^5.20.0",
+    "tslint-config-prettier": "^1.18.0",
+    "tslint-eslint-rules": "^5.4.0",
+    "tslint-plugin-prettier": "^2.0.1",
+    "tslint-react": "^4.1.0",
+    "typescript": "^3.6.3"
+  }
+}
