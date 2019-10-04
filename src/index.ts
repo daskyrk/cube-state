@@ -61,6 +61,8 @@ function createStore<
 >(opt: Opt<S, R, E>) {
   const storeName = opt.name;
   let storeState: S = opt.state;
+  const storeReducers = opt.reducers;
+  const storeEffects = opt.effects;
   const updaters: Array<Updater<S>> = [];
 
   function useStore<P>(selector: StateSelector<S, P>) {
@@ -84,7 +86,7 @@ function createStore<
   }
 
   const effects = {} as Effects<E>;
-  if (typeof opt.effects === "object") {
+  if (typeof storeEffects === "object") {
     const effectMeta = {
       async call<A, R>(fn: calledFn<A, R>, payload: A, extra?: any) {
         const res = await fn(payload);
@@ -95,9 +97,9 @@ function createStore<
       ...customEffectMeta,
       storeMap
     };
-    Object.keys(opt.effects).forEach(fnName => {
+    Object.keys(storeEffects).forEach(fnName => {
       // @ts-ignore
-      const originalEffect = opt.effects[fnName];
+      const originalEffect = storeEffects[fnName];
       // @ts-ignore
       effects[fnName] = async function<A, B>(payload: A, extra?: B) {
         let ps: Array<Promise<any>> = [];
@@ -135,13 +137,13 @@ function createStore<
   }
 
   const reducers = {} as Reducers<R>;
-  if (typeof opt.reducers === "object") {
-    Object.keys(opt.reducers).forEach(fnName => {
+  if (typeof storeReducers === "object") {
+    Object.keys(storeReducers).forEach(fnName => {
       // @ts-ignore
       reducers[fnName] = function(...payload: any) {
         let result: any;
         // @ts-ignore
-        const originalReducer = opt.reducers[fnName];
+        const originalReducer = storeReducers[fnName];
         const nextState: S = produce<S, S>(storeState, (draft: S) => {
           (hookMap.beforeReducer || []).forEach(beforeReducer =>
             beforeReducer({ storeName, reducerName: fnName, payload })
@@ -177,18 +179,18 @@ function createStore<
   }
 
   const newStore = {
-    name: opt.name,
-    state: opt.state,
-    useStore,
-    effects,
+    name: storeName,
+    state: storeState,
     reducers,
+    effects,
+    useStore,
     getState
   };
 
-  if (storeMap[opt.name]) {
-    console.error(`store name${opt.name} duplicated!`);
+  if (storeMap[storeName]) {
+    console.error(`store name${storeName} duplicated!`);
   } else {
-    storeMap[opt.name] = newStore;
+    storeMap[storeName] = newStore;
   }
 
   return newStore;
