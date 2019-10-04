@@ -88,7 +88,7 @@ function createStore<
   const effects = {} as Effects<E>;
   if (typeof storeEffects === "object") {
     const effectMeta = {
-      async call<A, R>(fn: calledFn<A, R>, payload: A, extra?: any) {
+      async call<A, R>(fn: calledFn<A, R>, payload: A) {
         const res = await fn(payload);
         return res;
       },
