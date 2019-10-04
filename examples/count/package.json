@@ -5,7 +5,9 @@
   "dependencies": {
     "react": "^16.10.2",
     "react-dom": "^16.10.2",
-    "react-scripts": "3.2.0"
+    "react-scripts": "3.2.0",
+    "fast-deep-equal": "^2.0.1",
+    "immer": "^4.0.0"
   },
   "scripts": {
     "start": "react-scripts start",
