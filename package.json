@@ -4,6 +4,10 @@
   "description": "state management library based on React Hooks",
   "main": "dist/index.js",
   "module": "dist/index.es.js",
+  "files": [
+    "dist",
+    "README.md"
+  ],
   "scripts": {
     "tsc": "rimraf dist/* && tsc",
     "min": "terser dist/index.js -o dist/index.min.js",
