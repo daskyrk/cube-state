@@ -4,7 +4,6 @@ export interface StoreItem {
   effects: Record<string, Function>;
   reducers: Record<string, Function>;
   getState: Function;
-  updateState: Function;
 }
 
 export type StoreMap = Record<string, StoreItem>;

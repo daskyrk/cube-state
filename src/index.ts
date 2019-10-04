@@ -80,7 +80,7 @@ function createStore<
       };
     });
 
-    return state;
+    return Object.freeze(state);
   }
 
   const effects = {} as Effects<E>;
@@ -182,8 +182,7 @@ function createStore<
     useStore,
     effects,
     reducers,
-    getState,
-    updateState
+    getState
   };
 
   if (storeMap[opt.name]) {
