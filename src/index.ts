@@ -1,26 +1,12 @@
 import equal from "fast-deep-equal";
 import produce from "immer";
 import { useState } from "react";
-import {
-  calledFn,
-  Effects,
-  EnhanceEffects,
-  EnhanceReducerFn,
-  EnhanceReducers,
-  HookMap,
-  InitOpt,
-  Opt,
-  Plugin,
-  Reducers,
-  StateSelector,
-  StoreMap,
-  Updater
-} from "./index.d";
 import { isPromise, useMount } from "./util";
+import { CubeState } from "./typings";
 
-const storeMap: StoreMap = {};
+const storeMap: CubeState.StoreMap = {};
 
-const hookMap: HookMap = {
+const hookMap: CubeState.HookMap = {
   onError: [],
   beforeReducer: [],
   afterReducer: [],
@@ -28,9 +14,9 @@ const hookMap: HookMap = {
   afterEffect: []
 };
 
-function use(plugin: Plugin) {
+function use(plugin: CubeState.Plugin) {
   Object.keys(hookMap).forEach(hookKey => {
-    const key = hookKey as keyof Plugin;
+    const key = hookKey as keyof CubeState.Plugin;
     if (typeof plugin[key] === "function") {
       // @ts-ignore
       hookMap[key].push(plugin[key]);
@@ -40,7 +26,7 @@ function use(plugin: Plugin) {
 
 let initFlag = false;
 let customEffectMeta = {};
-function init(initOpt: InitOpt = {}) {
+function init(initOpt: CubeState.InitOpt = {}) {
   if (initFlag) {
     return;
   }
@@ -56,16 +42,16 @@ function init(initOpt: InitOpt = {}) {
 // }
 function createStore<
   S,
-  R extends EnhanceReducers<S>,
-  E extends EnhanceEffects<S>
->(opt: Opt<S, R, E>) {
+  R extends CubeState.EnhanceReducers<S>,
+  E extends CubeState.EnhanceEffects<S>
+>(opt: CubeState.Opt<S, R, E>) {
   const storeName = opt.name;
   let storeState: S = opt.state;
   const storeReducers = opt.reducers;
   const storeEffects = opt.effects;
-  const updaters: Array<Updater<S>> = [];
+  const updaters: Array<CubeState.Updater<S>> = [];
 
-  function useStore<P>(selector: StateSelector<S, P>) {
+  function useStore<P>(selector: CubeState.StateSelector<S, P>) {
     const [state, setState] = useState(() => selector(storeState));
 
     const updater: any = (oldState: S, nextState: S) => {
@@ -85,10 +71,10 @@ function createStore<
     return Object.freeze(state);
   }
 
-  const effects = {} as Effects<E>;
+  const effects = {} as CubeState.Effects<E>;
   if (typeof storeEffects === "object") {
     const effectMeta = {
-      async call<A, R>(fn: calledFn<A, R>, payload: A) {
+      async call<A, R>(fn: CubeState.CalledFn<A, R>, payload: A) {
         const res = await fn(payload);
         return res;
       },
@@ -98,7 +84,6 @@ function createStore<
       storeMap
     };
     Object.keys(storeEffects).forEach(fnName => {
-      // @ts-ignore
       const originalEffect = storeEffects[fnName];
       // @ts-ignore
       effects[fnName] = async function<A, B>(payload: A, extra?: B) {
@@ -136,13 +121,12 @@ function createStore<
     });
   }
 
-  const reducers = {} as Reducers<R>;
+  const reducers = {} as CubeState.Reducers<R>;
   if (typeof storeReducers === "object") {
     Object.keys(storeReducers).forEach(fnName => {
       // @ts-ignore
       reducers[fnName] = function(...payload: any) {
         let result: any;
-        // @ts-ignore
         const originalReducer = storeReducers[fnName];
         const nextState: S = produce<S, S>(storeState, (draft: S) => {
           (hookMap.beforeReducer || []).forEach(beforeReducer =>
@@ -160,13 +144,13 @@ function createStore<
           updater(oldState, nextState);
         });
         return result;
-      } as EnhanceReducerFn<
+      } as CubeState.EnhanceReducerFn<
         R[Extract<keyof (R extends undefined ? undefined : R), string>]
       >;
     });
   }
 
-  function getState<P>(selector: StateSelector<S, P>) {
+  function getState<P>(selector: CubeState.StateSelector<S, P>) {
     return selector(storeState);
   }
 
