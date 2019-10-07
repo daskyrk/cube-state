@@ -1,4 +1,4 @@
-import { createStore } from "../cube";
+import { createStore } from "cube-state";
 
 function sleep<R>(time: number, data?: R) {
   return new Promise((resolve) => {

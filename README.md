@@ -13,3 +13,7 @@ A React state management library Based on Hooks
 * fully support Typescript
 * dva likely API
 * small
+
+
+## Example
+CodeSandbox: [count](https://codesandbox.io/s/count-cej5m)
