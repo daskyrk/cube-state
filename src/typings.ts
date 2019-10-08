@@ -9,8 +9,15 @@ export declare namespace CubeState {
 
   export type StoreMap = Record<string, StoreItem>;
 
+  export interface effectMetaConfig {
+    storeMap: StoreMap;
+    update(newState: any): any;
+    select(selector: (state: any) => any): any;
+  }
+
   export interface InitOpt {
-    effectMeta?(config: { storeMap: StoreMap }): object;
+    pureChecker(fnName: string): boolean;
+    effectMeta?(config: effectMetaConfig): object;
   }
 
   export interface Opt<S, R, E> {
@@ -48,6 +55,7 @@ export declare namespace CubeState {
     call<A, R>(fn: CalledFn<A, R>, payload: A, ...extra: any): Promise<R>;
     update(newState: Partial<S>): any;
     select<P>(selector: StateSelector<S, P>): P;
+    [k: string]: any;
   }
 
   export type CalledFn<A, R> = (payload: A) => R;

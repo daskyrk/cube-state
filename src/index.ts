@@ -26,15 +26,17 @@ function use(plugin: CubeState.Plugin) {
 
 let initFlag = false;
 let customEffectMeta = {};
-function init(initOpt: CubeState.InitOpt = {}) {
+let initOption: CubeState.InitOpt = {
+  pureChecker(fnName: string) {
+    return fnName.startsWith("$_");
+  }
+};
+function init(initOpt: Partial<CubeState.InitOpt>) {
   if (initFlag) {
     return;
   }
   initFlag = true;
-  const { effectMeta } = initOpt;
-  if (typeof effectMeta === "function") {
-    customEffectMeta = effectMeta({ storeMap });
-  }
+  initOption = { ...initOpt, ...initOption };
 }
 
 // function defaultSelector<S, P>(state: S) {
@@ -72,6 +74,13 @@ function createStore<
   }
 
   const effects = {} as CubeState.Effects<E>;
+  if (typeof initOption.effectMeta === "function") {
+    customEffectMeta = initOption.effectMeta({
+      storeMap,
+      select: getState,
+      update: updateState
+    });
+  }
   if (typeof storeEffects === "object") {
     const effectMeta = {
       async call<A, R>(fn: CubeState.CalledFn<A, R>, payload: A) {
@@ -124,20 +133,24 @@ function createStore<
   const reducers = {} as CubeState.Reducers<R>;
   if (typeof storeReducers === "object") {
     Object.keys(storeReducers).forEach(fnName => {
+      const isPure = !!initOption.pureChecker(fnName);
       // @ts-ignore
       reducers[fnName] = function(...payload: any) {
         let result: any;
         const originalReducer = storeReducers[fnName];
-        const nextState: S = produce<S, S>(storeState, (draft: S) => {
+        const reducerFn = (s: S) => {
           (hookMap.beforeReducer || []).forEach(beforeReducer =>
             beforeReducer({ storeName, reducerName: fnName, payload })
           );
-          result = originalReducer(draft, ...payload);
+          result = originalReducer(s, ...payload);
           (hookMap.afterReducer || []).forEach(afterReducer =>
             afterReducer({ storeName, reducerName: fnName, payload })
           );
           return result;
-        });
+        };
+        const nextState: S = isPure
+          ? reducerFn(storeState)
+          : produce<S, S>(storeState, reducerFn);
         const oldState = storeState;
         storeState = nextState;
         updaters.forEach(updater => {
@@ -172,7 +185,7 @@ function createStore<
   };
 
   if (storeMap[storeName]) {
-    console.error(`store name${storeName} duplicated!`);
+    console.error(`store name：${storeName} duplicated!`);
   } else {
     storeMap[storeName] = newStore;
   }
