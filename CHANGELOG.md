@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.1.3](https://github.com/daskyrk/cube-state/compare/v0.1.2...v0.1.3) (2019-10-08)
+
+
+### Features
+
+* support pure reducer & update in effectMeta ([f0b829d](https://github.com/daskyrk/cube-state/commit/f0b829d))
+
 ### [0.1.2](https://github.com/daskyrk/cube-state/compare/v0.1.1...v0.1.2) (2019-10-07)
 
 
