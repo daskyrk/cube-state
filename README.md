@@ -16,4 +16,42 @@ A React state management library Based on Hooks
 
 
 ## Example
-CodeSandbox: [count](https://codesandbox.io/s/count-cej5m)
+CodeSandbox: [counter](https://codesandbox.io/s/count-cej5m)
+
+Counter:
+```javascript
+import React from 'react';
+import { createStore } from "cube-state";
+
+const countStore = createStore({
+  name: 'count',
+  state: {
+    count: 0,
+  },
+  reducers: {
+    addNum(state, num: number) {
+      state.count += num;
+    }
+  },
+  effects: {}
+})
+
+
+function App() {
+  const countState = countStore.useStore(s => s);
+
+  return (
+    <div>
+      <h3>count: {countState.count}</h3>
+      <button onClick={() => countStore.reducers.addNum(1)}>+</button>
+      <button onClick={() => countStore.reducers.addNum(-1)}>-</button>
+    </div>
+  );
+}
+```
+
+
+## Question
+1. How to trigger state update externally, such as websocket?
+Create a store to save the state, update the state in onmessage function, and use store normally in the component.
+

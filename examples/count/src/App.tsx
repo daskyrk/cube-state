@@ -1,8 +1,20 @@
 import React from 'react';
 import countStore from "./stores/count";
+import socketStore from "./stores/socket";
+
+const closeSocket = socketStore.connect('wss://echo.websocket.org/', (socket: WebSocket) => {
+  setInterval(() => {
+    socket.send('time: ' + Date.now());
+  }, 2000);
+  setTimeout(() => {
+    closeSocket();
+  }, 9000);
+});
+
 
 function App() {
   const countState = countStore.useStore(s => s);
+  const socketState = socketStore.useStore(s => s);
 
   // can't change state directly, should use reducer or effect
   // countStore.state.count = 2;
@@ -23,6 +35,14 @@ function App() {
       <button onClick={() => addLater(1)}>add 1 after 2 seconds</button>
       <br />
       <Child count={countState.count} />
+      <h3>WebSocket status: {socketState.status}</h3>
+      <ul className="socket-msg">
+        {
+          socketState.messages.map((msg, i) => {
+            return <li key={i}>{msg.data}</li>;
+          })
+        }
+      </ul>
     </div>
   );
 }
