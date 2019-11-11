@@ -1,16 +1,13 @@
->  inspired by [stamen](https://github.com/forsigner/stamen)
-
-
 
 ## Intro
 
-A React state management library Based on Hooks
-
+A React state management library Based on Hooks 
+>  inspired by [stamen](https://github.com/forsigner/stamen)
 
 
 ## Feature
 
-* fully support Typescript
+* fully Typescript support
 * dva likely API
 * small
 
@@ -53,5 +50,6 @@ function App() {
 
 ## Question
 1. How to trigger state update externally, such as websocket?
+
 Create a store to save the state, update the state in onmessage function, and use store normally in the component.
 
