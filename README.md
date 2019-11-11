@@ -13,7 +13,7 @@ A React state management library Based on Hooks
 
 
 ## Example
-CodeSandbox: [counter](https://codesandbox.io/s/count-cej5m)
+CodeSandbox: [counter](https://codesandbox.io/s/count-cfwuy)
 
 Counter:
 ```javascript
@@ -52,4 +52,5 @@ function App() {
 1. How to trigger state update externally, such as websocket?
 
 Create a store to save the state, update the state in onmessage function, and use store normally in the component.
+you can see example [counter](https://codesandbox.io/s/count-cfwuy) for detail.
 
