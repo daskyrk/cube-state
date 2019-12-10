@@ -5,6 +5,7 @@ export declare namespace CubeState {
     effects: Record<string, Function>;
     reducers: Record<string, Function>;
     getState: Function;
+    [k: string]: any;
   }
 
   export type StoreMap = Record<string, StoreItem>;
@@ -18,6 +19,7 @@ export declare namespace CubeState {
   export interface InitOpt {
     pureChecker(fnName: string): boolean;
     effectMeta?(config: effectMetaConfig): object;
+    extend?(store: StoreItem): any;
   }
 
   export interface Opt<S, R, E> {
@@ -73,18 +75,41 @@ export declare namespace CubeState {
   export type Updater<S> = (oldState: S, nextState: S) => any;
 
   export type ErrorFn = (e: Error, meta: object) => any;
-  export type ReducerHook = (result: any, reducerName: string) => any;
-  export type BeforeEffectHook = (payload: any, meta: object) => any;
-  export type AfterEffectHook = (result: any, meta: object) => any;
+
+  interface ReducerParams {
+    storeName: string;
+    reducerName: string;
+    payload: any;
+  }
+  export type ReducerHook = (params: ReducerParams) => any;
+
+  interface BeforeEffectParams<S> extends EffectMeta<S> {
+    storeName: string;
+    effectName: string;
+    payload: any;
+    extra?: any;
+  }
+  export type BeforeEffectHook<S> = (params: BeforeEffectParams<S>) => any;
+
+  interface AfterEffectParams<S> extends EffectMeta<S> {
+    storeName: string;
+    effectName: string;
+    result: any;
+    extra?: any;
+  }
+  export type AfterEffectHook<S> = (params: BeforeEffectParams<S>) => any;
+
   export interface Plugin {
     onError?: ErrorFn;
     beforeReducer?: ReducerHook;
     afterReducer?: ReducerHook;
-    beforeEffect?: BeforeEffectHook;
-    afterEffect?: AfterEffectHook;
+    beforeEffect?: BeforeEffectHook<any>;
+    afterEffect?: AfterEffectHook<any>;
     extraReducers?: Function;
   }
+
+  type Fun = (...args: any) => any;
   export type HookMap = {
-    [K in keyof Plugin]: Function[];
+    [K in keyof Plugin]: Fun[];
   };
 }

@@ -47,10 +47,14 @@ function createStore<
   R extends CubeState.EnhanceReducers<S>,
   E extends CubeState.EnhanceEffects<S>
 >(opt: CubeState.Opt<S, R, E>) {
-  const storeName = opt.name;
-  let storeState: S = opt.state;
-  const storeReducers = opt.reducers;
-  const storeEffects = opt.effects;
+  const {
+    name: storeName,
+    state: _storeState,
+    reducers: storeReducers,
+    effects: storeEffects,
+    ...rest
+  } = opt;
+  let storeState: S = _storeState;
   const updaters: Array<CubeState.Updater<S>> = [];
 
   function useStore<P>(selector: CubeState.StateSelector<S, P>) {
@@ -98,7 +102,9 @@ function createStore<
       effects[fnName] = async function<A, B>(payload: A, extra?: B) {
         let ps: Array<Promise<any>> = [];
         produce<any, any>(payload, (pay: any) => {
-          for (const beforeEffect of hookMap.beforeEffect as Function[]) {
+          for (const beforeEffect of hookMap.beforeEffect as Array<
+            CubeState.BeforeEffectHook<S>
+          >) {
             const p = beforeEffect({
               storeName,
               effectName: fnName,
@@ -113,7 +119,9 @@ function createStore<
         const result = await originalEffect(effectMeta, payload, extra);
         ps = [];
         produce<any, any>(result, (res: any) => {
-          for (const afterEffect of hookMap.afterEffect as Function[]) {
+          for (const afterEffect of hookMap.afterEffect as Array<
+            CubeState.AfterEffectHook<S>
+          >) {
             const p = afterEffect({
               storeName,
               effectName: fnName,
@@ -139,12 +147,14 @@ function createStore<
         let result: any;
         const originalReducer = storeReducers[fnName];
         const reducerFn = (s: S) => {
-          (hookMap.beforeReducer || []).forEach(beforeReducer =>
-            beforeReducer({ storeName, reducerName: fnName, payload })
+          (hookMap.beforeReducer || []).forEach(
+            (beforeReducer: CubeState.ReducerHook) =>
+              beforeReducer({ storeName, reducerName: fnName, payload })
           );
           result = originalReducer(s, ...payload);
-          (hookMap.afterReducer || []).forEach(afterReducer =>
-            afterReducer({ storeName, reducerName: fnName, payload })
+          (hookMap.afterReducer || []).forEach(
+            (afterReducer: CubeState.ReducerHook) =>
+              afterReducer({ storeName, reducerName: fnName, payload })
           );
           return result;
         };
@@ -176,6 +186,7 @@ function createStore<
   }
 
   const newStore = {
+    ...rest,
     name: storeName,
     state: storeState,
     reducers,
@@ -183,6 +194,10 @@ function createStore<
     useStore,
     getState
   };
+
+  if (typeof initOption.extend === "function") {
+    initOption.extend(newStore);
+  }
 
   if (storeMap[storeName]) {
     console.error(`store name：${storeName} duplicated!`);
