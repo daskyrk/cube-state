@@ -25,7 +25,6 @@ function use(plugin: CubeState.Plugin) {
 }
 
 let initFlag = false;
-let customEffectMeta = {};
 let initOption: CubeState.InitOpt = {
   pureChecker(fnName: string) {
     return fnName.startsWith("$_");
@@ -78,28 +77,29 @@ function createStore<
   }
 
   const effects = {} as CubeState.Effects<E>;
-  if (typeof initOption.effectMeta === "function") {
-    customEffectMeta = initOption.effectMeta({
-      storeMap,
-      select: getState,
-      update: updateState
-    });
-  }
   if (typeof storeEffects === "object") {
-    const effectMeta = {
-      async call<A, R>(fn: CubeState.CalledFn<A, R>, payload: A) {
-        const res = await fn(payload);
-        return res;
-      },
-      select: getState,
-      update: updateState,
-      ...customEffectMeta,
-      storeMap
-    };
     Object.keys(storeEffects).forEach(fnName => {
       const originalEffect = storeEffects[fnName];
       // @ts-ignore
       effects[fnName] = async function<A, B>(payload: A, extra?: B) {
+        let customEffect = {};
+        if (typeof initOption.extendEffect === "function") {
+          customEffect = initOption.extendEffect({
+            storeMap,
+            select: getState,
+            update: updateState
+          });
+        }
+        const effectFn = {
+          async call<A, R>(fn: CubeState.CalledFn<A, R>, payload: A) {
+            const res = await fn(payload);
+            return res;
+          },
+          select: getState,
+          update: updateState,
+          ...customEffect,
+          storeMap
+        };
         let ps: Array<Promise<any>> = [];
         produce<any, any>(payload, (pay: any) => {
           for (const beforeEffect of hookMap.beforeEffect as Array<
@@ -110,13 +110,13 @@ function createStore<
               effectName: fnName,
               payload: pay,
               extra,
-              ...effectMeta
+              ...effectFn
             });
             isPromise(p) && ps.push(p);
           }
         });
         await Promise.all(ps);
-        const result = await originalEffect(effectMeta, payload, extra);
+        const result = await originalEffect(effectFn, payload, extra);
         ps = [];
         produce<any, any>(result, (res: any) => {
           for (const afterEffect of hookMap.afterEffect as Array<
@@ -127,7 +127,7 @@ function createStore<
               effectName: fnName,
               payload,
               result: res,
-              ...effectMeta
+              ...extendEffect
             });
             isPromise(p) && ps.push(p);
           }

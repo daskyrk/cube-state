@@ -10,7 +10,7 @@ export declare namespace CubeState {
 
   export type StoreMap = Record<string, StoreItem>;
 
-  export interface effectMetaConfig {
+  export interface extendEffectConfig {
     storeMap: StoreMap;
     update(newState: any): any;
     select(selector: (state: any) => any): any;
@@ -18,7 +18,7 @@ export declare namespace CubeState {
 
   export interface InitOpt {
     pureChecker(fnName: string): boolean;
-    effectMeta?(config: effectMetaConfig): object;
+    extendEffect?(config: extendEffectConfig): object;
     extend?(store: StoreItem): any;
   }
 
