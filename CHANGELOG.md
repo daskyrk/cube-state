@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.1.6](https://github.com/daskyrk/cube-state/compare/v0.1.5...v0.1.6) (2019-12-12)
+
+
+### Bug Fixes
+
+* rename missed typo ([1a7dcfb](https://github.com/daskyrk/cube-state/commit/1a7dcfb))
+
+
+### Features
+
+* rename and delete returned state for typing usage only ([a0089df](https://github.com/daskyrk/cube-state/commit/a0089df))
+
 ### [0.1.5](https://github.com/daskyrk/cube-state/compare/v0.1.4...v0.1.5) (2019-12-11)
 
 
