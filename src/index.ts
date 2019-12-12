@@ -188,12 +188,15 @@ function createStore<
   const newStore = {
     ...rest,
     name: storeName,
-    state: storeState,
+    stateType: storeState,
     reducers,
     effects,
     useStore,
     getState
   };
+
+  // only used for typing
+  delete newStore.stateType;
 
   if (typeof initOption.extend === "function") {
     initOption.extend(newStore);
