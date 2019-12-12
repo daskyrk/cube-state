@@ -127,7 +127,7 @@ function createStore<
               effectName: fnName,
               payload,
               result: res,
-              ...extendEffect
+              ...effectFn
             });
             isPromise(p) && ps.push(p);
           }
