@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.2.4](https://github.com/daskyrk/cube-state/compare/v0.2.3...v0.2.4) (2019-12-23)
+
+
+### Features
+
+* update count example ([1cd95e4](https://github.com/daskyrk/cube-state/commit/1cd95e4))
+
 ### [0.2.3](https://github.com/daskyrk/cube-state/compare/v0.2.2...v0.2.3) (2019-12-23)
 
 
