@@ -1,7 +1,7 @@
 
 ## Intro
 
-A React state management library Based on Hooks 
+A React state management library Based on Hooks
 >  inspired by [stamen](https://github.com/forsigner/stamen)
 
 
@@ -18,7 +18,9 @@ CodeSandbox: [counter](https://codesandbox.io/s/count-cfwuy)
 Counter:
 ```javascript
 import React from 'react';
-import { createStore } from "cube-state";
+import cube from "cube-state";
+
+const { createStore } = cube(initOptions);
 
 const countStore = createStore({
   name: 'count',
