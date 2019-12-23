@@ -3,7 +3,7 @@ import cubeState from "../index";
 const socketStore = cubeState.createStore({
   name: "socket",
   state: {
-    status: 'close',
+    status: "close",
     messages: [] as MessageEvent[],
     latestMsg: {}
   },
@@ -18,22 +18,22 @@ const socketStore = cubeState.createStore({
   }
 });
 
-let connect = (url: string, onOpen: Function) => {
+const connect = (url: string, onOpen: Function) => {
   // var wsUri = "wss://echo.websocket.org/";
-  socketStore.reducers.updateStatus('pending');
-  var websocket = new WebSocket(url);
+  socketStore.reducers.updateStatus("pending");
+  const websocket = new WebSocket(url);
   websocket.onopen = function(evt) {
-    socketStore.reducers.updateStatus('open');
+    socketStore.reducers.updateStatus("open");
     onOpen(websocket);
   };
   websocket.onclose = function(evt) {
-    socketStore.reducers.updateStatus('close');
+    socketStore.reducers.updateStatus("close");
   };
   websocket.onmessage = function(evt) {
     socketStore.reducers.onMessage(evt);
   };
   websocket.onerror = function(evt) {
-    console.log(evt)
+    console.log(evt);
   };
 
   return websocket.close;

@@ -16,8 +16,7 @@ function App() {
   const countState = countStore.useStore(s => s);
   const socketState = socketStore.useStore(s => s);
 
-  // can't change state directly, should use reducer or effect
-  // countStore.state.count = 2;
+  // countState is readOnly, should use reducer or effect
   // countState.count = 3;
 
   const addLater = (num: number) => {
@@ -49,7 +48,7 @@ function App() {
 
 
 interface IProps {
-  count: typeof countStore.state.count // use store for typing
+  count: typeof countStore.stateType.count // use store for typing
   addNum?: typeof countStore.reducers.addNum
   addLater?: typeof countStore.effects.addLater
 }

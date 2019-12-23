@@ -24,20 +24,6 @@ function use(plugin: CubeState.Plugin) {
   });
 }
 
-let initFlag = false;
-let initOption: CubeState.InitOpt = {
-  pureChecker(fnName: string) {
-    return fnName.startsWith("$_");
-  }
-};
-function init(initOpt: Partial<CubeState.InitOpt>) {
-  if (initFlag) {
-    return;
-  }
-  initFlag = true;
-  initOption = { ...initOpt, ...initOption };
-}
-
 // function defaultSelector<S, P>(state: S) {
 //   return state as P extends S ? S : P;
 // }
@@ -76,20 +62,20 @@ function createStore<
     return Object.freeze(state);
   }
 
+  let customEffect = {};
+  if (typeof initOption.extendEffect === "function") {
+    customEffect = initOption.extendEffect({
+      storeMap,
+      select: getState,
+      update: updateState
+    });
+  }
   const effects = {} as CubeState.Effects<E>;
   if (typeof storeEffects === "object") {
     Object.keys(storeEffects).forEach(fnName => {
       const originalEffect = storeEffects[fnName];
       // @ts-ignore
       effects[fnName] = async function<A, B>(payload: A, extra?: B) {
-        let customEffect = {};
-        if (typeof initOption.extendEffect === "function") {
-          customEffect = initOption.extendEffect({
-            storeMap,
-            select: getState,
-            update: updateState
-          });
-        }
         const effectFn = {
           async call<A, R>(fn: CubeState.CalledFn<A, R>, payload: A) {
             const res = await fn(payload);
@@ -198,8 +184,8 @@ function createStore<
   // only used for typing
   delete newStore.stateType;
 
-  if (typeof initOption.extend === "function") {
-    initOption.extend(newStore);
+  if (typeof initOption.onCreate === "function") {
+    initOption.onCreate(newStore);
   }
 
   if (storeMap[storeName]) {
@@ -215,6 +201,24 @@ function getStoreMap() {
   return storeMap;
 }
 
-export * from "./index";
-export { init, createStore, getStoreMap, use };
-export default { init, createStore, getStoreMap, use };
+const api = {
+  use,
+  createStore,
+  getStoreMap
+};
+let initFlag = false;
+let initOption: CubeState.InitOpt = {
+  pureChecker(fnName: string) {
+    return fnName.startsWith("$_");
+  }
+};
+function init(initOpt: Partial<CubeState.InitOpt>) {
+  if (initFlag) {
+    return api;
+  }
+  initFlag = true;
+  initOption = { ...initOpt, ...initOption };
+  return api;
+}
+
+export default init;

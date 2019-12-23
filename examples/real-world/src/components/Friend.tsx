@@ -3,8 +3,8 @@ import { friend, user, loading } from '../stores';
 import Spin from './Spin';
 
 interface Props {
-  loginUser: typeof user.state.me
-  friendList: typeof friend.state.friendList
+  loginUser: typeof user.stateType.me
+  friendList: typeof friend.stateType.friendList
   getFriendList: typeof friend.effects.getFriendList
   loading: boolean
 }
