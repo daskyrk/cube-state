@@ -1,6 +1,6 @@
-import cubeState from "cube-state";
+import { createStore } from "../cube";
 
-const socketStore = cubeState.createStore({
+const socketStore = createStore({
   name: "socket",
   state: {
     status: 'close',
