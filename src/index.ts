@@ -212,7 +212,7 @@ let initOption: CubeState.InitOpt = {
     return fnName.startsWith("$_");
   }
 };
-function init(initOpt: Partial<CubeState.InitOpt>) {
+function init(initOpt?: Partial<CubeState.InitOpt>) {
   if (initFlag) {
     return api;
   }
