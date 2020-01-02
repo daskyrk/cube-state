@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.2.5](https://github.com/daskyrk/cube-state/compare/v0.2.4...v0.2.5) (2020-01-02)
+
+
+### Features
+
+* throw error after effect hooks ([9a871b0](https://github.com/daskyrk/cube-state/commit/9a871b0))
+
 ### [0.2.4](https://github.com/daskyrk/cube-state/compare/v0.2.3...v0.2.4) (2019-12-23)
 
 
