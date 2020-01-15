@@ -37,7 +37,7 @@ const countStore = createStore({
 
 
 function App() {
-  const countState = countStore.useStore(s => s);
+  const countState = countStore.useStore();
 
   return (
     <div>
