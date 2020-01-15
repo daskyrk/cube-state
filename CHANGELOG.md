@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.2.6](https://github.com/daskyrk/cube-state/compare/v0.2.5...v0.2.6) (2020-01-15)
+
+
+### Features
+
+* support useStore or getState without selector param ([44673cb](https://github.com/daskyrk/cube-state/commit/44673cb))
+
 ### [0.2.5](https://github.com/daskyrk/cube-state/compare/v0.2.4...v0.2.5) (2020-01-02)
 
 
