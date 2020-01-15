@@ -1,9 +1,9 @@
 export declare namespace CubeState {
   interface StoreItem {
     name: string;
-    useStore: Function;
     effects: Record<string, Function>;
     reducers: Record<string, Function>;
+    useStore: Function;
     getState: Function;
     [k: string]: any;
   }
@@ -30,7 +30,7 @@ export declare namespace CubeState {
     [k: string]: any;
   }
 
-  type StateSelector<S, P> = (state: S) => P;
+  type StateSelector<S, P> = (state: S) => P extends CubeState.Holder ? S : P;
 
   interface EnhanceReducers<S> {
     [key: string]: EnhanceReducerFn<S>;
@@ -44,6 +44,9 @@ export declare namespace CubeState {
     ? (...args: A) => any
     : unknown;
 
+  // used as a particular return type, should not return this type in useStore or getState
+  type Holder = "__CUBE_HOLDER__";
+
   interface EnhanceEffects<S> {
     [key: string]: EnhanceEffectFn<S>;
   }
@@ -53,7 +56,9 @@ export declare namespace CubeState {
     call<A, R>(fn: () => R, ...extra: any): Promise<R>;
     call<A, R>(fn: CalledFn<A, R>, payload: A, ...extra: any): Promise<R>;
     update(newState: Partial<S>): any;
-    select<P>(selector: StateSelector<S, P>): P;
+    select<P>(
+      selector?: StateSelector<S, P>
+    ): P extends CubeState.Holder ? S : P;
     [k: string]: any;
   }
 

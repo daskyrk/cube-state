@@ -39,7 +39,9 @@ function createStore<
   let storeState: S = _storeState;
   const updaters: Array<CubeState.Updater<S>> = [];
 
-  function useStore<P>(selector?: CubeState.StateSelector<S, P>) {
+  function useStore<P = CubeState.Holder>(
+    selector?: CubeState.StateSelector<S, P>
+  ) {
     const [state, setState] = useState(() =>
       selector ? selector(storeState) : storeState
     );
@@ -61,7 +63,7 @@ function createStore<
       };
     });
 
-    return Object.freeze(state) as P extends unknown ? S : P;
+    return Object.freeze(state) as P extends CubeState.Holder ? S : P;
   }
 
   let customEffect = {};
@@ -170,10 +172,12 @@ function createStore<
     });
   }
 
-  function getState<P>(selector?: CubeState.StateSelector<S, P>) {
+  function getState<P = CubeState.Holder>(
+    selector?: CubeState.StateSelector<S, P>
+  ) {
     return selector
       ? selector(storeState)
-      : (storeState as P extends unknown ? S : P);
+      : (storeState as P extends CubeState.Holder ? S : P);
   }
 
   function updateState(newState: Partial<S>) {
