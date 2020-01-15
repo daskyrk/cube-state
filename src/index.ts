@@ -24,9 +24,6 @@ function use(plugin: CubeState.Plugin) {
   });
 }
 
-// function defaultSelector<S, P>(state: S) {
-//   return state as P extends S ? S : P;
-// }
 function createStore<
   S,
   R extends CubeState.EnhanceReducers<S>,
@@ -42,13 +39,18 @@ function createStore<
   let storeState: S = _storeState;
   const updaters: Array<CubeState.Updater<S>> = [];
 
-  function useStore<P>(selector: CubeState.StateSelector<S, P>) {
-    const [state, setState] = useState(() => selector(storeState));
+  function useStore<P>(selector?: CubeState.StateSelector<S, P>) {
+    const [state, setState] = useState(() =>
+      selector ? selector(storeState) : storeState
+    );
 
     const updater: any = (oldState: S, nextState: S) => {
-      const shouldUpdate = !equal(selector(oldState), selector(nextState));
+      const shouldUpdate = !equal(
+        selector ? selector(oldState) : oldState,
+        selector ? selector(nextState) : nextState
+      );
       if (shouldUpdate) {
-        setState(() => selector(nextState));
+        setState(() => (selector ? selector(nextState) : nextState));
       }
     };
 
@@ -59,7 +61,7 @@ function createStore<
       };
     });
 
-    return Object.freeze(state);
+    return Object.freeze(state) as P extends unknown ? S : P;
   }
 
   let customEffect = {};
@@ -168,8 +170,10 @@ function createStore<
     });
   }
 
-  function getState<P>(selector: CubeState.StateSelector<S, P>) {
-    return selector(storeState);
+  function getState<P>(selector?: CubeState.StateSelector<S, P>) {
+    return selector
+      ? selector(storeState)
+      : (storeState as P extends unknown ? S : P);
   }
 
   function updateState(newState: Partial<S>) {
