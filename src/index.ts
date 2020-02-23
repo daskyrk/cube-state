@@ -79,7 +79,7 @@ function createStore<
     Object.keys(storeEffects).forEach(fnName => {
       const originalEffect = storeEffects[fnName];
       // @ts-ignore
-      effects[fnName] = async function<A, B>(payload: A, extra?: B) {
+      effects[fnName] = async function<A, B>(payload: A, ...extra: B[]) {
         const effectFn = {
           async call<A, R>(fn: CubeState.CalledFn<A, R>, payload: A) {
             const res = await fn(payload);
@@ -109,7 +109,7 @@ function createStore<
         let result = null;
         let error = null;
         try {
-          result = await originalEffect(effectFn, payload, extra);
+          result = await originalEffect(effectFn, payload, ...(extra || []));
         } catch (e) {
           error = e;
         }
