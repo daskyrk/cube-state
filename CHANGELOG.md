@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.2.9](https://github.com/daskyrk/cube-state/compare/v0.2.8...v0.2.9) (2020-02-23)
+
+
+### Bug Fixes
+
+* accept more than 2 arguments in effect function ([c52acca](https://github.com/daskyrk/cube-state/commit/c52acca))
+
 ### [0.2.8](https://github.com/daskyrk/cube-state/compare/v0.2.7...v0.2.8) (2020-01-15)
 
 
