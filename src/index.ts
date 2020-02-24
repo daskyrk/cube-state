@@ -42,7 +42,7 @@ function createStore<
   function useStore<P = CubeState.Holder>(
     selector?: CubeState.StateSelector<S, P>
   ) {
-    const [state, setState] = useState(() =>
+    const [, setState] = useState(() =>
       selector ? selector(storeState) : storeState
     );
 
@@ -63,7 +63,9 @@ function createStore<
       };
     });
 
-    return Object.freeze(state) as P extends CubeState.Holder ? S : P;
+    return (selector
+      ? selector(storeState)
+      : storeState) as P extends CubeState.Holder ? S : P;
   }
 
   let customEffect = {};
