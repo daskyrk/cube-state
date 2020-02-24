@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.2.10](https://github.com/daskyrk/cube-state/compare/v0.2.9...v0.2.10) (2020-02-24)
+
+
+### Bug Fixes
+
+* useStore return storeState instead of state ([4fbebeb](https://github.com/daskyrk/cube-state/commit/4fbebeb))
+
 ### [0.2.9](https://github.com/daskyrk/cube-state/compare/v0.2.8...v0.2.9) (2020-02-23)
 
 
