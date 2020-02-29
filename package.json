@@ -17,8 +17,9 @@
     "format:check": "prettier --list-different \"src/**/*.{js,ts,tsx}\"",
     "lint": "tslint -c tslint.json \"src/**/*.{ts,tsx}\"",
     "lint:fix": "tslint -c tslint.json \"src/**/*.{ts,tsx}\" --fix",
-    "test": "jest",
-    "test:watch": "jest --watch",
+    "pretest": "tsc __tests__/*.tsx --noEmit --jsx preserve -m None -t ESNext --moduleResolution Node --isolatedModules --esModuleInterop --skipLibCheck",
+    "test": "jest --verbose",
+    "test:watch": "jest --watch --verbose",
     "coveralls": "jest --coverage && cat ./coverage/lcov.info | ./node_modules/coveralls/bin/coveralls.js && rm -rf ./coverage",
     "release": "standard-version"
   },
@@ -56,6 +57,24 @@
     "url": "https://github.com/daskyrk/cube-state/issues"
   },
   "homepage": "https://github.com/daskyrk/cube-state#readme",
+  "jest": {
+    "testPathIgnorePatterns": [
+      "/node_modules/",
+      "jest",
+      "plugin"
+    ],
+    "coverageDirectory": "./coverage/",
+    "collectCoverage": false,
+    "coverageReporters": [
+      "json",
+      "html",
+      "text",
+      "text-summary"
+    ],
+    "collectCoverageFrom": [
+      "src/**/*.{js,ts,tsx}"
+    ]
+  },
   "dependencies": {
     "fast-deep-equal": "^3.1.1",
     "immer": "^5.3.6"
@@ -65,13 +84,18 @@
     "react-dom": "^16.10.1"
   },
   "devDependencies": {
+    "@babel/core": "^7.6.4",
+    "@babel/plugin-transform-react-jsx": "^7.3.0",
+    "@babel/plugin-transform-typescript": "^7.6.3",
+    "@babel/preset-env": "^7.6.3",
     "@commitlint/cli": "^7.5.2",
     "@commitlint/config-conventional": "^7.5.0",
+    "@testing-library/react": "^9.4.1",
     "@types/enzyme": "^3.9.0",
     "@types/graphql": "^14.0.7",
     "@types/jest": "^24.0.21",
-    "@types/react": "^16.8.6",
-    "@types/react-dom": "^16.8.2",
+    "@types/react": "^16.9.23",
+    "@types/react-dom": "^16.9.5",
     "@types/react-test-renderer": "^16.8.1",
     "babel-jest": "^24.9.0",
     "coveralls": "^3.0.6",
@@ -87,7 +111,6 @@
     "rollup-plugin-typescript2": "^0.24.3",
     "standard-version": "^7.0.0",
     "terser": "^4.3.4",
-    "ts-jest": "^24.1.0",
     "tslint": "^5.20.0",
     "tslint-config-prettier": "^1.18.0",
     "tslint-eslint-rules": "^5.4.0",
