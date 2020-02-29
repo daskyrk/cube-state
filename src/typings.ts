@@ -17,7 +17,6 @@ export declare namespace CubeState {
   }
 
   interface InitOpt {
-    pureChecker(fnName: string): boolean;
     extendEffect?(config: extendEffectConfig): object;
     onCreate?(store: StoreItem): any;
   }

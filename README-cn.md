@@ -1,37 +1,37 @@
 
-English | [简体中文](./README-cn.md)
+[English](./README.md) | 简体中文
 
 # cube-state
 
-> A React state management library Based on Hooks which inspired by [stamen](https://github.com/forsigner/stamen)
+> 一个基于 Hooks 的React状态管理库，灵感来自于 [stamen](https://github.com/forsigner/stamen)
 
 [![npm version](https://img.shields.io/npm/v/cube-state.svg?logo=npm)](https://www.npmjs.com/package/cube-state)
 [![npm bundle size (minified)](https://img.shields.io/bundlephobia/min/cube-state.svg?logo=javascript)](https://www.npmjs.com/package/cube-state)
 ![React](https://img.shields.io/npm/dependency-version/cube-state/peer/react?logo=react)
 
-## Features
+## 特性
 
 - Perfect Typescript support.
 - dva likely API
 - small
 
-## Try It Online
+## 线上试一把
 
 [![Edit](https://codesandbox.io/static/img/play-codesandbox.svg)](https://codesandbox.io/s/count-cfwuy)
 
-## Install
+## 安装
 
 ```bash
 npm install --save cube-state
-# Or
+# 或者
 yarn add cube-state
 ```
 
-## Quick Start
+## 快速开始
 
-### Init
+### 初始化配置
 
-first of all, do some init job, like extend effect or patch every store when created. you can see the [Advanced Usages](#Advanced-Usages).
+首先，做一些初始化的操作，比如扩展effect的第一个参数，或者对每个新建的store做一些操作。高级用法请见 [高级用法](#高级用法).
 
 **init-cube.ts**
 
@@ -43,7 +43,7 @@ const { createStore, getStoreMap, use } = init();
 export { createStore, getStoreMap, use };
 ```
 
-### Create store
+### 创建 store
 
 **stores/counter.ts**
 
@@ -64,7 +64,7 @@ export default createStore({
 });
 ```
 
-## Use store
+## 使用 store
 
 In order to retrieve the data of counter model, you need to import and call `useCounterModel` in your components.
 
@@ -82,28 +82,28 @@ function App(props) {
 }
 ```
 
-## Advanced Usages
+## 高级用法
 
-### Pass initial config
+### 传递初始配置参数
 
 ```tsx
 import init from "cube-state";
 
 const cube = init({
   extendEffect({ storeMap, update }) {
-    // extend effect first argument
+    // 扩展effect的第一个参数
   },
   onCreate(store) {
-    // do some job after store is created
+    // store创建后做一些操作
   }
 });
 ```
 
-### Use data without subscribe change
+### 使用数据而不观察变化
 
-use `getState` instead of `useStore` if you don't want to rerender component when store changed;
+当store变化时，如果不想重渲染组件，使用 `getState` 而不是 `useStore`
 
-> `getState` is not Hook, you can use it anywhere.
+> `getState` 不是 Hook，所以可以在任何地方使用
 
 ```tsx
 import counterStore from "stores/counter";
@@ -113,10 +113,9 @@ export function doubleCount() {
 }
 ```
 
-### Use in class components
+### 在类组件中使用
 
-you have to wrap class component by functional component.
-will provide some util function later.
+现在只能使用函数式组件包裹一下类组件并传递prop。后面会提供工具方法优化。
 
 ```tsx
 import counterStore from "stores/counter";
@@ -144,9 +143,9 @@ export default () => {
 };
 ```
 
-### Performance optimization
+### 性能优化
 
-use selector to pick the data you want to subscribe precisely.
+使用`selector`来选择你想精确观察的数据。
 
 ```jsx
 const [count, deepValue] = someStore.useStore(s => [s.count, s.a.deepValue]);
