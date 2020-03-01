@@ -6,7 +6,7 @@ English | [简体中文](./README-cn.md)
 > A React state management library Based on Hooks which inspired by [stamen](https://github.com/forsigner/stamen)
 
 [![npm version](https://img.shields.io/npm/v/cube-state.svg?logo=npm)](https://www.npmjs.com/package/cube-state)
-[![npm bundle size (minified)](https://img.shields.io/bundlephobia/min/cube-state.svg?logo=javascript)](https://www.npmjs.com/package/cube-state)
+![Bundle Size](https://badgen.net/bundlephobia/minzip/cube-state)
 ![React](https://img.shields.io/npm/dependency-version/cube-state/peer/react?logo=react)
 
 ## Features
