@@ -299,52 +299,50 @@ describe("update and render", () => {
     await waitForElement(() => getByText("three"));
   });
 
-  it("ensures parent components subscribe before children", async () => {
-    const childStore = createStore({
-      name: "child",
-      state: {
-        children: {
-          "1": { text: "child 1" },
-          "2": { text: "child 2" }
-        } as object
-      },
-      reducers: {
-        updateState(state, payload: object) {
-          return payload;
-        }
-      }
-    });
+  it("not re-render when use getState", async () => {
+    let notWatchRenderCount = 0;
+    let watchRenderCount = 0;
 
-    function changeState() {
-      childStore.reducers.updateState({
-        children: {
-          "3": { text: "child 3" }
-        }
-      });
+    function NotWatch() {
+      const count = countStore.getState(s => s.count);
+      notWatchRenderCount++;
+      return <div>notWatch: {count}</div>;
     }
 
-    function Child({ id }) {
-      const child = childStore.useStore(s => s.children[id]);
-      return <div>{child.text}</div>;
+    function Watch() {
+      const count = countStore.useStore(s => s.count);
+      watchRenderCount++;
+      return <div>watch: {count}</div>;
     }
 
-    function Parent() {
-      const childStates = childStore.useStore(s => s.children);
+    function Container() {
       return (
-        <>
-          <button onClick={changeState}>change state</button>
-          {Object.keys(childStates).map(id => (
-            <Child id={id} key={id} />
-          ))}
-        </>
+        <div>
+          <button onClick={() => countStore.reducers.addCount()}>change</button>
+          <NotWatch />
+          <Watch />
+        </div>
       );
     }
 
-    const { getByText } = render(<Parent />);
+    const { getByText, rerender } = render(<Container />);
+    await waitForElement(() => getByText("notWatch: 0"));
+    await waitForElement(() => getByText("watch: 0"));
+    expect(notWatchRenderCount).toBe(1);
+    expect(watchRenderCount).toBe(1);
 
-    fireEvent.click(getByText("change state"));
+    fireEvent.click(getByText("change"));
 
-    await waitForElement(() => getByText("child 3"));
+    await waitForElement(() => getByText("notWatch: 0"));
+    await waitForElement(() => getByText("watch: 1"));
+    expect(notWatchRenderCount).toBe(1);
+    expect(watchRenderCount).toBe(2);
+
+    rerender(<Container />);
+    await waitForElement(() => getByText("notWatch: 1"));
+    await waitForElement(() => getByText("watch: 1"));
+    expect(notWatchRenderCount).toBe(2);
+    expect(watchRenderCount).toBe(3);
   });
 
   // it('can throw an error in reducer and effect', async () => {

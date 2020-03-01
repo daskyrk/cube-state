@@ -9,9 +9,9 @@
     "README.md"
   ],
   "scripts": {
-    "tsc": "rimraf dist/* && tsc",
     "min": "terser dist/index.js -o dist/index.min.js",
-    "build": "rimraf dist/* && rollup -c && npm run min",
+    "prebuild": "rimraf dist",
+    "build": "rollup -c && npm run min && npm run copy",
     "build:watch": "rimraf dist/* && rollup -c -w",
     "format": "prettier --write \"src/**/*.{js,ts,tsx}\"",
     "format:check": "prettier --list-different \"src/**/*.{js,ts,tsx}\"",
@@ -21,6 +21,9 @@
     "test": "jest --verbose",
     "test:watch": "jest --watch --verbose",
     "coveralls": "jest --coverage && cat ./coverage/lcov.info | ./node_modules/coveralls/bin/coveralls.js && rm -rf ./coverage",
+    "copy": "copyfiles package.json README.md README-cn.md LICENSE dist && npm run copyPlugin && npm run editPackage",
+    "copyPlugin": "copyfiles -u 1 src/plugin/* dist",
+    "editPackage": "json -I -f dist/package.json -e \"this.private=false; this.devDependencies=undefined; this.scripts=undefined; this.husky=undefined; this.commitlint=undefined; this.jest=undefined; this['lint-staged']=undefined;\"",
     "release": "standard-version"
   },
   "husky": {
@@ -80,8 +83,7 @@
     "immer": "^5.3.6"
   },
   "peerDependencies": {
-    "react": "^16.10.1",
-    "react-dom": "^16.10.1"
+    "react": ">=16.8"
   },
   "devDependencies": {
     "@babel/core": "^7.6.4",
@@ -91,23 +93,21 @@
     "@commitlint/cli": "^7.5.2",
     "@commitlint/config-conventional": "^7.5.0",
     "@testing-library/react": "^9.4.1",
-    "@types/enzyme": "^3.9.0",
-    "@types/graphql": "^14.0.7",
     "@types/jest": "^24.0.21",
     "@types/react": "^16.9.23",
     "@types/react-dom": "^16.9.5",
-    "@types/react-test-renderer": "^16.8.1",
-    "babel-jest": "^24.9.0",
-    "coveralls": "^3.0.6",
+    "copyfiles": "^2.2.0",
+    "coveralls": "^3.0.9",
     "husky": "^3.0.8",
     "jest": "^24.9.0",
+    "json": "^9.0.6",
     "lint-staged": "^9.4.1",
     "prettier": "^1.18.2",
     "react": "^16.8.3",
     "react-dom": "^16.8.3",
-    "react-test-renderer": "16.10.1",
     "rimraf": "^3.0.0",
     "rollup": "^1.22.0",
+    "rollup-plugin-size-snapshot": "^0.11.0",
     "rollup-plugin-typescript2": "^0.24.3",
     "standard-version": "^7.0.0",
     "terser": "^4.3.4",

@@ -75,17 +75,6 @@ function init(initOption: CubeState.InitOpt = {}) {
         };
       });
 
-      // const result = (selector ? selector(storeState) : storeState)
-      // if (!isProd && typeof result === 'object') {
-      //   return new Proxy(result as any as object, {
-      //     get: function (target: any, propKey: string, receiver: any) {
-      //       return Reflect.get(target, propKey, receiver);
-      //     },
-      //     set: function () {
-      //       throw new Error('do not update state directly, use reducer or effect');
-      //     }
-      //   }) as typeof result;
-      // }
       return (selector
         ? selector(storeState)
         : storeState) as P extends CubeState.Holder ? S : P;

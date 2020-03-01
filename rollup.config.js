@@ -1,5 +1,5 @@
 import typescript from 'rollup-plugin-typescript2'
-
+import { sizeSnapshot } from 'rollup-plugin-size-snapshot'
 import pkg from './package.json'
 
 export default {
@@ -9,19 +9,16 @@ export default {
       file: pkg.main,
       format: 'cjs',
       exports: 'named',
-      sourcemap: true,
     },
     {
       file: pkg.module,
       format: 'es',
       exports: 'named',
-      sourcemap: true,
     },
   ],
-  external: ['immer', 'fast-deep-equal', 'react', 'react-dom'],
+  external: ['immer', 'fast-deep-equal', 'react'],
   plugins: [
-    typescript({
-      rollupCommonJSResolveHack: true,
-    }),
+    typescript(),
+    sizeSnapshot(),
   ],
 }

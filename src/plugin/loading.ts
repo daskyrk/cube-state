@@ -1,13 +1,14 @@
-import cubeState from "../index";
+import cube from "../index";
 
 // 获得对象上某个属性的类型，比如 ValueOf<{ a: object }, 'a'> 得到object
 type ValueOf<T extends Record<string, any>, K> = K extends keyof T
   ? T[K]
   : never;
 
-const loadingStore = cubeState.createStore({
+const { createStore, use } = cube();
+const loadingStore = createStore({
   name: "loading",
-  state: {},
+  state: {} as Record<string, any>,
   reducers: {
     setLoading(state, storeName: string, effectName, status: boolean) {
       state[storeName] = state[storeName] || {};
@@ -26,7 +27,7 @@ type EffectKeys<T> = {
   [K in keyof T]: boolean;
 };
 
-cubeState.use({
+use({
   beforeEffect({ storeName, effectName }) {
     loadingStore.reducers.setLoading(storeName, effectName, true);
   },

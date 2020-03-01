@@ -11,13 +11,13 @@
 
 ## 特性
 
-- Perfect Typescript support.
-- dva likely API
-- small
+- 完美支持Typescript
+- 类似dva的组织结构和API
+- 很小
 
 ## 线上试一把
 
-[![Edit](https://codesandbox.io/static/img/play-codesandbox.svg)](https://codesandbox.io/s/count-cfwuy)
+[![Edit](https://codesandbox.io/static/img/play-codesandbox.svg)](https://codesandbox.io/s/count-4ng8l)
 
 ## 安装
 
