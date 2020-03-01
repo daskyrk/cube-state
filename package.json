@@ -1,6 +1,6 @@
 {
   "name": "cube-state",
-  "version": "0.2.10",
+  "version": "1.0.0-alpha",
   "description": "state management library based on React Hooks",
   "main": "dist/index.js",
   "module": "dist/index.es.js",

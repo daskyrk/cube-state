@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.0.0-alpha](https://github.com/daskyrk/cube-state/compare/v0.2.10...v1.0.0-alpha) (2020-03-01)
+
+
+### Features
+
+* update build logic & test & plugin ([838a54b](https://github.com/daskyrk/cube-state/commit/838a54b))
+
 ### [0.2.10](https://github.com/daskyrk/cube-state/compare/v0.2.9...v0.2.10) (2020-02-24)
 
 
