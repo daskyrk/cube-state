@@ -1,16 +1,18 @@
 {
   "name": "cube-state",
-  "version": "1.0.0-alpha",
+  "version": "1.0.0-alpha.5",
   "description": "state management library based on React Hooks",
   "main": "dist/index.js",
   "module": "dist/index.es.js",
   "files": [
-    "dist"
+    "dist",
+    "README.md",
+    "README-cn.md"
   ],
   "scripts": {
     "min": "terser dist/index.js -o dist/index.min.js",
     "prebuild": "rimraf dist",
-    "build": "rollup -c && npm run min && npm run copy",
+    "build": "rollup -c && npm run min",
     "build:watch": "rimraf dist/* && rollup -c -w",
     "format": "prettier --write \"src/**/*.{js,ts,tsx}\"",
     "format:check": "prettier --list-different \"src/**/*.{js,ts,tsx}\"",
@@ -20,9 +22,9 @@
     "test": "jest --verbose",
     "test:watch": "jest --watch --verbose",
     "coveralls": "jest --coverage && cat ./coverage/lcov.info | ./node_modules/coveralls/bin/coveralls.js && rm -rf ./coverage",
-    "copy": "copyfiles package.json README.md README-cn.md LICENSE dist && npm run copyPlugin && npm run editPackage",
-    "copyPlugin": "copyfiles -u 1 src/plugin/* dist",
-    "editPackage": "json -I -f dist/package.json -e \"this.private=false; this.devDependencies=undefined; this.scripts=undefined; this.husky=undefined; this.commitlint=undefined; this.jest=undefined; this['lint-staged']=undefined;\"",
+    "prepublishOnly": "npm run copy && npm run editPackage",
+    "copy": "copyfiles -u 1 src/plugin/* dist",
+    "editPackage": "json -I -f package.json -e \"this.private=false; this.devDependencies=undefined; this.scripts=undefined; this.husky=undefined; this.commitlint=undefined; this.jest=undefined; this['lint-staged']=undefined;\"",
     "release": "standard-version"
   },
   "husky": {
