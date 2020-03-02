@@ -5,8 +5,7 @@
   "main": "dist/index.js",
   "module": "dist/index.es.js",
   "files": [
-    "dist",
-    "README.md"
+    "dist"
   ],
   "scripts": {
     "min": "terser dist/index.js -o dist/index.min.js",

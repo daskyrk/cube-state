@@ -1,12 +1,18 @@
 import equal from "fast-deep-equal";
 import produce from "immer";
-import { useReducer } from "react";
-import { isPromise, useMount } from "./util";
+import { useEffect, useReducer } from "react";
 import { CubeState } from "./typings";
 
 const isProd = process.env.NODE_ENV === "production";
+const isPromise = (obj: PromiseLike<any>) => {
+  return (
+    !!obj &&
+    (typeof obj === "object" || typeof obj === "function") &&
+    typeof obj.then === "function"
+  );
+};
 
-function init(initOption: CubeState.InitOpt = {}) {
+export default function init(initOption: CubeState.InitOpt = {}) {
   const api = {
     use,
     createStore,
@@ -68,12 +74,12 @@ function init(initOption: CubeState.InitOpt = {}) {
         }
       };
 
-      useMount(() => {
+      useEffect(() => {
         updaters.push(updater);
         return () => {
           updaters.splice(updaters.indexOf(updater), 1);
         };
-      });
+      }, []);
 
       return (selector
         ? selector(storeState)
@@ -232,4 +238,4 @@ function init(initOption: CubeState.InitOpt = {}) {
   return api;
 }
 
-export default init;
+export { init };
