@@ -18,11 +18,6 @@ export default function init(initOption: CubeState.InitOpt = {}) {
     createStore,
     getStoreMap
   };
-  let haveInit = false;
-  if (haveInit) {
-    return api;
-  }
-  haveInit = true;
 
   const storeMap: CubeState.StoreMap = {};
 
