@@ -11,14 +11,9 @@ const isPromise = (obj: PromiseLike<any>) => {
     typeof obj.then === "function"
   );
 };
+const pureChecker = (fnName: string) => fnName.startsWith("$_");
 
 export default function init(initOption: CubeState.InitOpt = {}) {
-  const api = {
-    use,
-    createStore,
-    getStoreMap
-  };
-
   const storeMap: CubeState.StoreMap = {};
 
   const hookMap: CubeState.HookMap = {
@@ -155,6 +150,7 @@ export default function init(initOption: CubeState.InitOpt = {}) {
     const reducers = {} as CubeState.Reducers<R>;
     if (typeof storeReducers === "object") {
       Object.keys(storeReducers).forEach(fnName => {
+        const isPure = (initOption.pureChecker || pureChecker)(fnName);
         // @ts-ignore
         reducers[fnName] = function(...payload: any) {
           let result: any;
@@ -171,7 +167,10 @@ export default function init(initOption: CubeState.InitOpt = {}) {
             );
             return result;
           };
-          const nextState: S = produce<S, S>(storeState, reducerFn);
+          // immer don't support circular object
+          const nextState: S = isPure
+            ? reducerFn(storeState)
+            : produce<S, S>(storeState, reducerFn);
           const oldState = storeState;
           storeState = nextState;
           updaters.forEach(updater => {
@@ -226,11 +225,11 @@ export default function init(initOption: CubeState.InitOpt = {}) {
     return newStore;
   }
 
-  function getStoreMap() {
-    return storeMap;
-  }
-
-  return api;
+  return {
+    use,
+    createStore,
+    storeMap
+  };
 }
 
 export { init };
