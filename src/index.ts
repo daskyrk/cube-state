@@ -11,10 +11,13 @@ const isPromise = (obj: PromiseLike<any>) => {
     typeof obj.then === "function"
   );
 };
-const pureChecker = (fnName: string) => fnName.startsWith("$_");
 
-export default function init(initOption: CubeState.InitOpt = {}) {
+export default function init(initOpt: CubeState.InitOpt = {}) {
   const storeMap: CubeState.StoreMap = {};
+  const initOption = {
+    pureChecker: (fnName: string) => fnName.startsWith("$_"),
+    ...initOpt
+  };
 
   const hookMap: CubeState.HookMap = {
     onError: [],
@@ -79,9 +82,8 @@ export default function init(initOption: CubeState.InitOpt = {}) {
     let customEffect = {};
     if (typeof initOption.extendEffect === "function") {
       customEffect = initOption.extendEffect({
-        storeMap,
         select: getState,
-        update: setState
+        update: (s: Partial<S>) => wrapHook(() => setState(s), "setState")
       });
     }
     const effects = {} as CubeState.Effects<E>;
@@ -96,7 +98,8 @@ export default function init(initOption: CubeState.InitOpt = {}) {
               return res;
             },
             select: getState,
-            update: setState,
+            update: (s: Partial<S>) =>
+              wrapHook(() => setState(s), fnName + " update"),
             ...customEffect,
             storeMap
           };
@@ -150,37 +153,45 @@ export default function init(initOption: CubeState.InitOpt = {}) {
     const reducers = {} as CubeState.Reducers<R>;
     if (typeof storeReducers === "object") {
       Object.keys(storeReducers).forEach(fnName => {
-        const isPure = (initOption.pureChecker || pureChecker)(fnName);
+        const isPure = initOption.pureChecker(fnName);
         // @ts-ignore
         reducers[fnName] = function(...payload: any) {
           let result: any;
           const originalReducer = storeReducers[fnName];
-          const reducerFn = (s: S) => {
-            (hookMap.beforeReducer || []).forEach(
-              (beforeReducer: CubeState.ReducerHook) =>
-                beforeReducer({ storeName, reducerName: fnName, payload })
-            );
-            result = originalReducer(s, ...payload);
-            (hookMap.afterReducer || []).forEach(
-              (afterReducer: CubeState.ReducerHook) =>
-                afterReducer({ storeName, reducerName: fnName, payload })
-            );
-            return result;
-          };
+          const reducer = (s: S) =>
+            wrapHook(() => originalReducer(s, ...payload), fnName, payload);
           // immer don't support circular object
           const nextState: S = isPure
-            ? reducerFn(storeState)
-            : produce<S, S>(storeState, reducerFn);
-          const oldState = storeState;
-          storeState = nextState;
-          updaters.forEach(updater => {
-            updater(oldState, nextState);
-          });
+            ? reducer(storeState)
+            : produce<S, S>(storeState, reducer);
+          setState(nextState);
           return result;
         } as CubeState.EnhanceReducerFn<
           R[Extract<keyof (R extends undefined ? undefined : R), string>]
         >;
       });
+    }
+
+    function wrapHook(execute: Function, fnName: string, payload?: any) {
+      let result: any;
+      (hookMap.beforeReducer || []).forEach(
+        (beforeReducer: CubeState.ReducerHook) =>
+          beforeReducer({
+            storeName,
+            reducerName: fnName,
+            payload: payload || storeState
+          })
+      );
+      result = execute();
+      (hookMap.afterReducer || []).forEach(
+        (afterReducer: CubeState.ReducerHook) =>
+          afterReducer({
+            storeName,
+            reducerName: fnName,
+            payload: payload || result
+          })
+      );
+      return result;
     }
 
     function getState<P = CubeState.Holder>(

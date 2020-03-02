@@ -11,7 +11,6 @@ export declare namespace CubeState {
   type StoreMap = Record<string, StoreItem>;
 
   interface extendEffectConfig {
-    storeMap: StoreMap;
     update(newState: any): any;
     select(selector: (state: any) => any): any;
   }
@@ -104,7 +103,6 @@ export declare namespace CubeState {
     afterReducer?: ReducerHook;
     beforeEffect?: BeforeEffectHook<any>;
     afterEffect?: AfterEffectHook<any>;
-    extraReducers?: Function;
   }
 
   type Fun = (...args: any) => any;

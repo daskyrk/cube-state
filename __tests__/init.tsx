@@ -30,13 +30,9 @@ describe("init and create", () => {
   });
 
   it("shape of return by init and createStore", () => {
-    expect(cube).toMatchInlineSnapshot(`
-      Object {
-        "createStore": [Function],
-        "getStoreMap": [Function],
-        "use": [Function],
-      }
-    `);
+    expect(typeof cube.createStore).toBe("function");
+    expect(typeof cube.storeMap).toBe("object");
+    expect(typeof cube.use).toBe("function");
 
     expect(stateStore).toMatchInlineSnapshot(`
       Object {
@@ -148,7 +144,7 @@ describe("init and create", () => {
 });
 
 describe("get & set state out of component", () => {
-  const { createStore, getStoreMap } = init();
+  const { createStore, storeMap } = init();
 
   createStore({
     name: "first",
@@ -175,11 +171,11 @@ describe("get & set state out of component", () => {
   });
 
   it("can get the store", () => {
-    expect(Object.keys(getStoreMap())).toEqual(["first", "second"]);
+    expect(Object.keys(storeMap)).toEqual(["first", "second"]);
   });
 
   it("can set the store", () => {
-    const { first, second } = getStoreMap();
+    const { first, second } = storeMap;
     first.reducers.addCount();
     expect(first.getState(s => s.count)).toBe(1);
     expect(second.getState(s => s.count)).toBe(0);

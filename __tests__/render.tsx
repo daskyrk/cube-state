@@ -26,7 +26,7 @@ afterEach(() => {
 });
 
 describe("update and render", () => {
-  const { createStore, getStoreMap, use } = init();
+  const { createStore, storeMap, use } = init();
 
   const countStore = createStore({
     name: "count",
