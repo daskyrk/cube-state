@@ -12,7 +12,7 @@
 ## 特性
 
 - 完美支持Typescript
-- 类似dva的组织结构和API
+- 类似dva的API和组织结构
 - 很小
 
 ## 线上试一把
@@ -38,9 +38,9 @@ yarn add cube-state
 ```tsx
 import init from "cube-state";
 
-const { createStore, getStoreMap, use } = init();
+const { createStore, storeMap, use } = init();
 
-export { createStore, getStoreMap, use };
+export { createStore, storeMap, use };
 ```
 
 ### 创建 store

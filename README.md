@@ -11,8 +11,8 @@ English | [简体中文](./README-cn.md)
 
 ## Features
 
-- Perfect Typescript support.
-- dva likely API
+- Perfect Typescript support
+- dva likely API and structure
 - small
 
 ## Try It Online
@@ -38,9 +38,9 @@ first of all, do some init job, like extend effect or patch every store when cre
 ```tsx
 import init from "cube-state";
 
-const { createStore, getStoreMap, use } = init();
+const { createStore, storeMap, use } = init();
 
-export { createStore, getStoreMap, use };
+export { createStore, storeMap, use };
 ```
 
 ### Create store
