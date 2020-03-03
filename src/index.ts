@@ -243,4 +243,5 @@ export default function init(initOpt: CubeState.InitOpt = {}) {
   };
 }
 
-export { init };
+type CubeAPI = ReturnType<typeof init>;
+export { init, CubeAPI };

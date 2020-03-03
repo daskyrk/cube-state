@@ -82,6 +82,38 @@ function App(props) {
 }
 ```
 
+## 插件
+
+### loading
+
+使用 loading 插件切换加载状态
+
+```tsx
+import loadingStore from 'cube-state/dist/plugin/loading';
+import userStore from 'stores/user';
+
+function MsgList() {
+  const { getMsgList } = userStore.effects;
+  const loading = loadingStore.useSpace(userStore);
+
+  React.useEffect(() => {
+    getMsgList();
+  }, []);
+
+  return <Spin loading={loading.getMsgList}><div>msg list</div><Spin>
+}
+```
+
+## devtools
+
+使用 redux 扩展工具观察数据变化详情
+
+```js
+import devtools from 'cube-state/dist/plugin/dev-tool';
+
+devtools({ storeMap, use });
+```
+
 ## 高级用法
 
 ### 传递初始配置参数

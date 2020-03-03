@@ -82,6 +82,38 @@ function App(props) {
 }
 ```
 
+## Plugin
+
+### loading
+
+use loading plugin to toggle loading status
+
+```tsx
+import loadingStore from 'cube-state/dist/plugin/loading';
+import userStore from 'stores/user';
+
+function MsgList() {
+  const { getMsgList } = userStore.effects;
+  const loading = loadingStore.useSpace(userStore);
+
+  React.useEffect(() => {
+    getMsgList();
+  }, []);
+
+  return <Spin loading={loading.getMsgList}><div>msg list</div><Spin>
+}
+```
+
+### devtools
+
+use redux devtools to watch data change detail
+
+```js
+import devtools from 'cube-state/dist/plugin/dev-tool';
+
+devtools({ storeMap, use });
+```
+
 ## Advanced Usages
 
 ### Pass initial config
