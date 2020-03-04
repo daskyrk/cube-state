@@ -2,6 +2,26 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.0.0](https://github.com/daskyrk/cube-state/compare/v1.0.0-alpha...v1.0.0) (2020-03-04)
+
+
+### Bug Fixes
+
+* check name duplicate at first ([8d3645e](https://github.com/daskyrk/cube-state/commit/8d3645e))
+* downgrade fast-deep-equal to v2 ([6ccb8cb](https://github.com/daskyrk/cube-state/commit/6ccb8cb))
+* have inited check is useless here ([bb81c24](https://github.com/daskyrk/cube-state/commit/bb81c24))
+* immer don't support circular object, restore pureChecker ([8df4c2a](https://github.com/daskyrk/cube-state/commit/8df4c2a))
+* published package is empty ([fe0e73e](https://github.com/daskyrk/cube-state/commit/fe0e73e))
+
+
+### Features
+
+* add redux dev tools plugin ([e81f2b9](https://github.com/daskyrk/cube-state/commit/e81f2b9))
+* effect update support beforeReducer and afterReducer ([f9b4994](https://github.com/daskyrk/cube-state/commit/f9b4994))
+* support create flat store ([fbd98e9](https://github.com/daskyrk/cube-state/commit/fbd98e9))
+* update loading plugin and docs ([1c0a59d](https://github.com/daskyrk/cube-state/commit/1c0a59d))
+* update test sets ([2c5f3f8](https://github.com/daskyrk/cube-state/commit/2c5f3f8))
+
 ## [1.0.0-alpha](https://github.com/daskyrk/cube-state/compare/v0.2.10...v1.0.0-alpha) (2020-03-01)
 
 
