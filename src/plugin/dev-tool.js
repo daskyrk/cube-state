@@ -1,17 +1,14 @@
-export default ({
-  use,
-  storeMap,
-}) => {
+export default ({ use, storeMap }) => {
   let extension;
   try {
     extension =
       window.__REDUX_DEVTOOLS_EXTENSION__ ||
       window.top.__REDUX_DEVTOOLS_EXTENSION__;
-  } catch { }
+  } catch {}
 
   if (!extension) {
-    if (process.env.NODE_ENV === 'development') {
-      console.warn('Please install/enable Redux devtools extension');
+    if (process.env.NODE_ENV === "development") {
+      console.warn("Please install/enable Redux devtools extension");
     }
     return;
   }
@@ -19,11 +16,14 @@ export default ({
   const devtools = extension.connect();
   use({
     afterReducer({ storeName, reducerName, payload }) {
-      Object.keys(storeMap).forEach((k) => {
+      Object.keys(storeMap).forEach(k => {
         newStore[k] = storeMap[k].getState();
       });
-      devtools.send({ type: `[${storeName}] > ${reducerName}`, payload }, newStore);
-    },
+      devtools.send(
+        { type: `[${storeName}] > ${reducerName}`, payload },
+        newStore
+      );
+    }
   });
   devtools.init(storeMap);
 };

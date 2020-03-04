@@ -5,33 +5,32 @@ type ValueOf<T extends Record<string, any>, K> = K extends keyof T
   ? T[K]
   : never;
 
-export default ({
-  use,
-  createStore
-}: CubeAPI) => {
+export default ({ use, createStore }: CubeAPI) => {
   const loadingStore = createStore({
-    name: 'loading',
+    name: "loading",
     state: {} as Record<string, any>,
     reducers: {
       setLoading(state, storeName: string, effectName, status: boolean) {
         state[storeName] = state[storeName] || {};
         state[storeName][effectName] = status;
-      },
-    },
+      }
+    }
   });
 
-  function useSpace<T>(store: T & { name: string }): EffectKeys<ValueOf<T, 'effects'>> {
+  function useSpace<T>(
+    store: T & { name: string }
+  ): EffectKeys<ValueOf<T, "effects">> {
     const loadingSpace = loadingStore.useStore(s => s[store.name]) || {};
     // add proxy to avoid return undefined in isLoading
     const loadingSpaceProxy = new Proxy(loadingSpace, {
       get: (target, propKey) => {
         return !!Reflect.get(target, propKey);
-      },
+      }
     });
     return loadingSpaceProxy;
   }
   type EffectKeys<T> = {
-    [K in keyof T]: boolean
+    [K in keyof T]: boolean;
   };
 
   use({
@@ -40,12 +39,11 @@ export default ({
     },
     afterEffect({ storeName, effectName }) {
       loadingStore.reducers.setLoading(storeName, effectName, false);
-    },
+    }
   });
 
   return {
     ...loadingStore,
-    useSpace,
+    useSpace
   };
-}
-
+};
