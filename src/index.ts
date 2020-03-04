@@ -1,6 +1,6 @@
 import equal from "fast-deep-equal";
 import produce from "immer";
-import { useEffect, useReducer } from "react";
+import { useEffect, useState } from "react";
 import { CubeState } from "./typings";
 
 const isProd = process.env.NODE_ENV === "production";
@@ -55,7 +55,7 @@ export default function init(initOpt: CubeState.InitOpt = {}) {
     function useStore<P = CubeState.Holder>(
       selector?: CubeState.StateSelector<S, P>
     ) {
-      const forceUpdate = useReducer(c => c + 1, 0)[1];
+      const forceUpdate = useState(0)[1];
 
       const updater: any = (oldState: S, nextState: S) => {
         const shouldUpdate = !equal(
@@ -63,7 +63,7 @@ export default function init(initOpt: CubeState.InitOpt = {}) {
           selector ? selector(nextState) : nextState
         );
         if (shouldUpdate) {
-          forceUpdate();
+          forceUpdate(c => c + 1);
         }
       };
 

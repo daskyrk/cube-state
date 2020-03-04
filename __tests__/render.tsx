@@ -8,7 +8,6 @@ import {
   waitForElement
 } from "@testing-library/react";
 import init from "../src/index";
-// import { devtools, redux } from '../src/middleware'
 
 export function sleep<T>(time: number, data?: T, flag = true): Promise<T> {
   return new Promise((resolve, reject) => {
@@ -297,6 +296,73 @@ describe("update and render", () => {
 
     fireEvent.click(getByText("update2"));
     await waitForElement(() => getByText("three"));
+  });
+
+  it("not re-render when new state is deep equal to old state", async () => {
+    const complexStore = createStore({
+      name: "complex",
+      state: {
+        value: 0,
+        obj: { a: { b: 2 } } as any,
+        list: [{ a: 1 }, { b: 2 }] as any[]
+      },
+      reducers: {
+        setValue(state, v: number) {
+          state.value = v;
+        },
+        setObj(state, pay: object) {
+          state.obj = pay;
+        },
+        setList(state, list: any[]) {
+          state.list = list;
+        }
+      }
+    });
+
+    let renderCount = 0;
+    function Comp() {
+      renderCount++;
+      const [v, obj, list] = complexStore.useStore(s => [
+        s.value,
+        s.obj,
+        s.list
+      ]);
+      return (
+        <div>
+          <div>value: {v}</div>
+          <div>obj: {JSON.stringify(obj)}</div>
+          <div>list: {JSON.stringify(list)}</div>
+        </div>
+      );
+    }
+
+    const { getByText } = render(<Comp />);
+    await waitForElement(() => getByText("value: 0"));
+    expect(renderCount).toBe(1);
+
+    act(() => complexStore.reducers.setValue(1));
+    await waitForElement(() => getByText("value: 1"));
+    expect(renderCount).toBe(2);
+
+    act(() => complexStore.reducers.setValue(1));
+    await waitForElement(() => getByText("value: 1"));
+    expect(renderCount).toBe(2);
+
+    act(() => complexStore.reducers.setObj({ a: { b: 2 } }));
+    await waitForElement(() => getByText(`obj: {"a":{"b":2}}`));
+    expect(renderCount).toBe(2);
+
+    act(() => complexStore.reducers.setObj({ a: { c: 3 } }));
+    await waitForElement(() => getByText(`obj: {"a":{"c":3}}`));
+    expect(renderCount).toBe(3);
+
+    act(() => complexStore.reducers.setList([{ a: 1 }, { b: 2 }]));
+    await waitForElement(() => getByText(`list: [{"a":1},{"b":2}]`));
+    expect(renderCount).toBe(3);
+
+    act(() => complexStore.reducers.setList([{ c: 3 }]));
+    await waitForElement(() => getByText(`list: [{"c":3}]`));
+    expect(renderCount).toBe(4);
   });
 
   it("not re-render when use getState", async () => {

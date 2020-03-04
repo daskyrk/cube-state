@@ -118,29 +118,29 @@ describe("init and create", () => {
     }
   });
 
-  it("throw error when change state directly", () => {
-    function Counter() {
-      const fullState = stateStore.useStore();
-      try {
-        fullState.b = "changed";
-      } catch (e) {
-        expect(e.message).toEqual(
-          "Cannot assign to read only property 'b' of object '#<Object>'"
-        );
-      }
-      // TODO: should throw error
-      fullState.d.obj = false;
-      try {
-        delete fullState.d.obj;
-      } catch (e) {
-        expect(e.message).toEqual("store name：effect duplicated!");
-      }
+  // it("throw error when change state directly", () => {
+  //   function Counter() {
+  //     const fullState = stateStore.useStore();
+  //     try {
+  //       fullState.b = "changed";
+  //     } catch (e) {
+  //       expect(e.message).toEqual(
+  //         "Cannot assign to read only property 'b' of object '#<Object>'"
+  //       );
+  //     }
+  //     // TODO: should throw error
+  //     fullState.d.obj = false;
+  //     try {
+  //       delete fullState.d.obj;
+  //     } catch (e) {
+  //       expect(e.message).toEqual("store name：effect duplicated!");
+  //     }
 
-      return null;
-    }
+  //     return null;
+  //   }
 
-    render(<Counter />);
-  });
+  //   render(<Counter />);
+  // });
 });
 
 describe("get & set state out of component", () => {
