@@ -345,6 +345,34 @@ describe("update and render", () => {
     expect(watchRenderCount).toBe(3);
   });
 
+  // fast-deep-equal v3 not support compare object property create by Object.create(null)
+  it("support Object.create(null) with fast-deep-equal", async () => {
+    function genNoProto() {
+      this.value = Object.create(null);
+    }
+
+    const compareStore = createStore({
+      name: "compare",
+      state: new genNoProto(),
+      reducers: {
+        setValue(state, v: object) {
+          return v;
+        }
+      }
+    });
+
+    function Comp() {
+      const v = compareStore.useStore(s => s.value);
+      return <div>value: {JSON.stringify(v)}</div>;
+    }
+
+    const { getByText } = render(<Comp />);
+    await waitForElement(() => getByText("value: {}"));
+
+    act(() => compareStore.reducers.setValue(new genNoProto()));
+    await waitForElement(() => getByText("value: {}"));
+  });
+
   // it('can throw an error in reducer and effect', async () => {
   //   console.error = jest.fn()
 
