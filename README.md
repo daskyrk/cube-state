@@ -38,12 +38,15 @@ first of all, do some init job, like extend effect or patch every store when cre
 ```tsx
 import init from "cube-state";
 
-const { createStore, storeMap, use } = init();
+const { createStore, createFlatStore, storeMap, use } = init();
 
-export { createStore, storeMap, use };
+export { createStore, createFlatStore, storeMap, use };
 ```
 
 ### Create store
+
+Pass a plain config to `createStore` and get a wrapped store object.
+or use `createFlatStore` to flatten reducers and effects to store object.
 
 **stores/counter.ts**
 
@@ -66,7 +69,7 @@ export default createStore({
 
 ## Use store
 
-In order to retrieve the data of counter model, you need to import and call `useCounterModel` in your components.
+Call `useStore` to watch selected data change and re-render.
 
 ```tsx
 import counterStore from "stores/counter";

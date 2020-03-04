@@ -38,12 +38,17 @@ yarn add cube-state
 ```tsx
 import init from "cube-state";
 
-const { createStore, storeMap, use } = init();
+const { createStore, createFlatStore, storeMap, use } = init();
 
-export { createStore, storeMap, use };
+export { createStore, createFlatStore, storeMap, use };
 ```
 
 ### 创建 store
+
+### 创建 store
+
+传一个配置对象给 `createStore` 方法，获得一个包装后的 store 对象。
+或者使用 `createFlatStore` 获得解构了 reducers 和 effects 的 store 对象。
 
 **stores/counter.ts**
 
@@ -66,7 +71,7 @@ export default createStore({
 
 ## 使用 store
 
-In order to retrieve the data of counter model, you need to import and call `useCounterModel` in your components.
+调用 `useStore` 来观察选择的数据变化并重渲染。
 
 ```tsx
 import counterStore from "stores/counter";

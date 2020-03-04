@@ -236,10 +236,26 @@ export default function init(initOpt: CubeState.InitOpt = {}) {
     return newStore;
   }
 
+  function createFlatStore<
+    S,
+    R extends CubeState.EnhanceReducers<S>,
+    E extends CubeState.EnhanceEffects<S>
+  >(opt: CubeState.Opt<S, R, E>) {
+    const { reducers, effects, useStore, getState, ...rest } = createStore(opt);
+    return {
+      ...rest,
+      ...effects,
+      ...reducers,
+      useStore,
+      getState
+    };
+  }
+
   return {
     use,
+    storeMap,
     createStore,
-    storeMap
+    createFlatStore
   };
 }
 

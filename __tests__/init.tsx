@@ -31,6 +31,7 @@ describe("init and create", () => {
 
   it("shape of return by init and createStore", () => {
     expect(typeof cube.createStore).toBe("function");
+    expect(typeof cube.createFlatStore).toBe("function");
     expect(typeof cube.storeMap).toBe("object");
     expect(typeof cube.use).toBe("function");
 
