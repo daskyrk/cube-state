@@ -49,6 +49,10 @@ export default function init(initOpt: CubeState.InitOpt = {}) {
       effects: storeEffects,
       ...rest
     } = opt;
+    if (storeMap[storeName] && !isProd) {
+      throw new Error(`store name：${storeName} duplicated!`);
+    }
+
     let storeState: S = _storeState;
     const updaters: Array<CubeState.Updater<S>> = [];
 
@@ -227,11 +231,7 @@ export default function init(initOpt: CubeState.InitOpt = {}) {
       initOption.onCreate(newStore);
     }
 
-    if (storeMap[storeName] && !isProd) {
-      throw new Error(`store name：${storeName} duplicated!`);
-    } else {
-      storeMap[storeName] = newStore;
-    }
+    storeMap[storeName] = newStore;
 
     return newStore;
   }
