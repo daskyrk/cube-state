@@ -246,6 +246,8 @@ export default function init(initOpt: CubeState.InitOpt = {}) {
       ...rest,
       ...effects,
       ...reducers,
+      _effects: effects,
+      _reducers: reducers,
       useStore,
       getState
     };

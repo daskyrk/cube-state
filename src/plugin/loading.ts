@@ -19,7 +19,7 @@ export default ({ use, createStore }: CubeAPI) => {
 
   function useSpace<T>(
     store: T & { name: string }
-  ): EffectKeys<ValueOf<T, "effects">> {
+  ): EffectKeys<ValueOf<T, "effects" | "_effects">> {
     const loadingSpace = loadingStore.useStore(s => s[store.name]) || {};
     // add proxy to avoid return undefined in isLoading
     const loadingSpaceProxy = new Proxy(loadingSpace, {
