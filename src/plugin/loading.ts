@@ -5,7 +5,7 @@ type ValueOf<T extends Record<string, any>, K> = K extends keyof T
   ? T[K]
   : never;
 
-export default ({ use, createStore }: CubeAPI) => {
+export default ({ use, createStore }: Pick<CubeAPI, 'use' | 'createStore'>) => {
   const loadingStore = createStore({
     name: "loading",
     state: {} as Record<string, any>,
