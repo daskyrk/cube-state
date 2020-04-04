@@ -25,7 +25,7 @@
     "prepublishOnly": "npm run copy && npm run editPackage",
     "copy": "copyfiles -u 1 src/plugin/* dist",
     "editPackage": "json -I -f package.json -e \"this.private=false; this.devDependencies=undefined; this.scripts=undefined; this.husky=undefined; this.commitlint=undefined; this.jest=undefined; this['lint-staged']=undefined;\"",
-    "release": "standard-version"
+    "release": "npm run build & standard-version"
   },
   "husky": {
     "hooks": {
