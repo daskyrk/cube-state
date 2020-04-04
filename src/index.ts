@@ -56,37 +56,26 @@ export default function init(initOpt: CubeState.InitOpt = {}) {
     let storeState: S = _storeState;
     const updaters: Array<CubeState.Updater<S>> = [];
 
-    function useStore<P = CubeState.Holder>(
-      selector?: CubeState.StateSelector<S, P>
-    ) {
+    function useStore<P>(selector: CubeState.StateSelector<S, P>) {
       const forceUpdate = useState(0)[1];
 
       const updater: any = (oldState: S, nextState: S) => {
-        const shouldUpdate = !equal(
-          selector ? selector(oldState) : oldState,
-          selector ? selector(nextState) : nextState
-        );
-        if (shouldUpdate) {
-          forceUpdate(addReducer);
-        }
+        const shouldUpdate = !equal(selector(oldState), selector(nextState));
+        shouldUpdate && forceUpdate(addReducer);
         updater.dirty = false;
       };
       updaters.push(updater);
 
       useEffect(() => {
         updater.ready = true;
-        if (updater.dirty) {
-          // maybe state changed before mount
-          forceUpdate(addReducer);
-        }
+        // maybe state changed before mount
+        updater.dirty && forceUpdate(addReducer);
         return () => {
           updaters.splice(updaters.indexOf(updater), 1);
         };
       }, []);
 
-      return (selector
-        ? selector(storeState)
-        : storeState) as P extends CubeState.Holder ? S : P;
+      return selector(storeState);
     }
 
     let customEffect = {};
@@ -204,12 +193,8 @@ export default function init(initOpt: CubeState.InitOpt = {}) {
       return result;
     }
 
-    function getState<P = CubeState.Holder>(
-      selector?: CubeState.StateSelector<S, P>
-    ) {
-      return selector
-        ? selector(storeState)
-        : (storeState as P extends CubeState.Holder ? S : P);
+    function getState<P>(selector: CubeState.StateSelector<S, P>) {
+      return selector(storeState);
     }
 
     function setState(newState: Partial<S>) {

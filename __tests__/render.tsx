@@ -117,7 +117,7 @@ describe("update and render", () => {
     let controlRenderCount = 0;
 
     function Counter() {
-      const state = countStore.useStore();
+      const state = countStore.useStore(s => s);
       counterRenderCount++;
       return (
         <div>
@@ -172,7 +172,7 @@ describe("update and render", () => {
     let parentRenderCount = 0;
 
     function Child({ extra }) {
-      const state = countStore.useStore();
+      const state = countStore.useStore(s => s);
       childRenderCount++;
       return (
         <div>

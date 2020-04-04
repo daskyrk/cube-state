@@ -48,7 +48,7 @@ describe("init and create", () => {
 
   it("return same state with selector or not", () => {
     function Counter() {
-      const fullState = stateStore.useStore();
+      const fullState = stateStore.useStore(s => s);
       const sameFullState = stateStore.useStore(s => s);
       expect(fullState).toEqual(sameFullState);
       expect(fullState).toEqual({
@@ -121,7 +121,7 @@ describe("init and create", () => {
 
   // it("throw error when change state directly", () => {
   //   function Counter() {
-  //     const fullState = stateStore.useStore();
+  //     const fullState = stateStore.useStore(s => s);
   //     try {
   //       fullState.b = "changed";
   //     } catch (e) {
