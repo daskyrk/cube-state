@@ -70,7 +70,11 @@ export declare namespace CubeState {
     ? (...args: A) => ReturnType<F>
     : unknown;
 
-  type Updater<S> = (oldState: S, nextState: S) => any;
+  interface Updater<S> {
+    (oldState: S, nextState: S): any;
+    dirty: boolean;
+    ready: boolean;
+  }
 
   type ErrorFn = (e: Error, meta: object) => any;
 

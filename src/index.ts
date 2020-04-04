@@ -11,7 +11,7 @@ const isPromise = (obj: PromiseLike<any>) => {
     typeof obj.then === "function"
   );
 };
-
+const addReducer = (c: number) => c + 1;
 export default function init(initOpt: CubeState.InitOpt = {}) {
   const storeMap: CubeState.StoreMap = {};
   const initOption = {
@@ -67,12 +67,18 @@ export default function init(initOpt: CubeState.InitOpt = {}) {
           selector ? selector(nextState) : nextState
         );
         if (shouldUpdate) {
-          forceUpdate(c => c + 1);
+          forceUpdate(addReducer);
         }
+        updater.dirty = false;
       };
+      updaters.push(updater);
 
       useEffect(() => {
-        updaters.push(updater);
+        updater.ready = true;
+        if (updater.dirty) {
+          // maybe state changed before mount
+          forceUpdate(addReducer);
+        }
         return () => {
           updaters.splice(updaters.indexOf(updater), 1);
         };
@@ -210,7 +216,8 @@ export default function init(initOpt: CubeState.InitOpt = {}) {
       const oldState = storeState;
       storeState = { ...oldState, ...newState };
       updaters.forEach(updater => {
-        updater(oldState, storeState);
+        updater.dirty = true;
+        updater.ready && updater(oldState, storeState);
       });
     }
 
