@@ -17,7 +17,7 @@ export default ({ use, storeMap }) => {
   use({
     afterReducer({ storeName, reducerName, payload }) {
       Object.keys(storeMap).forEach(k => {
-        newStore[k] = storeMap[k].getState();
+        newStore[k] = storeMap[k].getState(s => s);
       });
       devtools.send(
         { type: `[${storeName}] > ${reducerName}`, payload },
