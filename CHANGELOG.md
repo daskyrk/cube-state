@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.0.7](https://github.com/daskyrk/cube-state/compare/v1.0.6...v1.0.7) (2020-04-07)
+
+
+### Bug Fixes
+
+* dev tool add required selector ([fa832f9](https://github.com/daskyrk/cube-state/commit/fa832f9))
+
 ### [1.0.6](https://github.com/daskyrk/cube-state/compare/v1.0.5...v1.0.6) (2020-04-04)
 
 ### [1.0.5](https://github.com/daskyrk/cube-state/compare/v1.0.4...v1.0.5) (2020-04-04)
