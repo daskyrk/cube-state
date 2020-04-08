@@ -1,4 +1,3 @@
-
 export default ({ use, createStore }) => {
   const loadingStore = createStore({
     name: "loading",
