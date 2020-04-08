@@ -3,6 +3,10 @@ import produce from "immer";
 import { useEffect, useState } from "react";
 import { CubeState } from "./typings";
 
+type Merge<A, B> = ({ [K in keyof A]: K extends keyof B ? B[K] : A[K] } &
+  B) extends infer O
+  ? { [K in keyof O]: O[K] }
+  : never;
 const isProd = process.env.NODE_ENV === "production";
 const isPromise = (obj: PromiseLike<any>) => {
   return (
@@ -11,7 +15,6 @@ const isPromise = (obj: PromiseLike<any>) => {
     typeof obj.then === "function"
   );
 };
-const addReducer = (c: number) => c + 1;
 export default function init(initOpt: CubeState.InitOpt = {}) {
   const storeMap: CubeState.StoreMap = {};
   const initOption = {
@@ -42,188 +45,226 @@ export default function init(initOpt: CubeState.InitOpt = {}) {
     R extends CubeState.EnhanceReducers<S>,
     E extends CubeState.EnhanceEffects<S>
   >(opt: CubeState.Opt<S, R, E>) {
-    const {
-      name: storeName,
-      state: _storeState,
-      reducers: storeReducers,
-      effects: storeEffects,
-      ...rest
-    } = opt;
-    if (storeMap[storeName] && !isProd) {
-      throw new Error(`store name：${storeName} duplicated!`);
-    }
+    function extend<
+      ES,
+      ER extends CubeState.EnhanceReducers<Merge<S, ES>>,
+      EE extends CubeState.EnhanceEffects<Merge<S, ES>>
+    >(extOpt: CubeState.ExtOpt<ES, ER, EE>) {
+      const { name, state, reducers, effects } = extOpt;
+      // if provide name, generate a new store
+      if (name && storeMap[name] && !isProd) {
+        throw new Error(`[cube-state] Store name：${name} duplicated!`);
+      }
 
-    let storeState: S = _storeState;
-    const updaters: Array<CubeState.Updater<S>> = [];
+      type MergedState = Merge<S, ES>;
+      // have name and this -> baseStore.extend({ name: new }): create new base on baseStore
+      // have name without this -> extend({ name: new }): create new by createStore
+      // no name have this -> baseStore.extend({}): extend baseStore
+      // no name and this -> extend({}): not exist
 
-    function useStore<P>(selector: CubeState.StateSelector<S, P>) {
-      const forceUpdate = useState(0)[1];
-
-      const updater: any = (oldState: S, nextState: S) => {
-        const shouldUpdate = !equal(selector(oldState), selector(nextState));
-        shouldUpdate && forceUpdate(addReducer);
-        updater.dirty = false;
-      };
-      updaters.push(updater);
-
-      useEffect(() => {
-        updater.ready = true;
-        // maybe state changed before mount
-        updater.dirty && forceUpdate(addReducer);
-        return () => {
-          updaters.splice(updaters.indexOf(updater), 1);
-        };
-      }, []);
-
-      return selector(storeState);
-    }
-
-    let customEffect = {};
-    if (typeof initOption.extendEffect === "function") {
-      customEffect = initOption.extendEffect({
-        select: getState,
-        update: (s: Partial<S>) => wrapHook(() => setState(s), "setState")
-      });
-    }
-    const effects = {} as CubeState.Effects<E>;
-    if (typeof storeEffects === "object") {
-      Object.keys(storeEffects).forEach(fnName => {
-        const originalEffect = storeEffects[fnName];
+      // create new store
+      let newName = name as string; // if no name, will set later
+      let _state = (state as unknown) as MergedState;
+      const _effects = {} as CubeState.Effects<Merge<E, EE>>;
+      const _reducers = {} as CubeState.Reducers<Merge<R, ER>>;
+      let mergedEffects = effects || ({} as any);
+      let mergedReducers = reducers || ({} as any);
+      // @ts-ignore
+      if (this) {
         // @ts-ignore
-        effects[fnName] = async function<A, B>(payload: A, ...extra: B[]) {
-          const effectFn = {
-            async call<A, R>(fn: CubeState.CalledFn<A, R>, payload: A) {
-              const res = await fn(payload);
-              return res;
-            },
-            select: getState,
-            update: (s: Partial<S>) =>
-              wrapHook(() => setState(s), fnName + " update"),
-            ...customEffect,
-            storeMap
+        const baseStore: CubeState.StoreItem = this;
+        newName = baseStore.name;
+        const baseState = baseStore.getState((s: any) => s);
+        const baseOpt = storeMap[baseStore.name]._opt;
+        _state = state ? { ...baseState, ...state } : { ...baseState };
+        // 扩展旧的时，使用原始的opt重新构建effects和reducers，直接合并会和baseStore有联系
+        mergedEffects = { ...baseOpt.effects, ...effects };
+        mergedReducers = { ...baseOpt.reducers, ...reducers };
+      }
+
+      const updaters: Array<CubeState.Updater<MergedState>> = [];
+
+      function useStore<P>(selector: CubeState.StateSelector<MergedState, P>) {
+        const forceUpdate = useState({})[1];
+
+        const updater: any = (
+          oldState: MergedState,
+          nextState: MergedState
+        ) => {
+          const shouldUpdate = !equal(selector(oldState), selector(nextState));
+          shouldUpdate && forceUpdate({});
+          updater.dirty = false;
+        };
+        updaters.push(updater);
+
+        useEffect(() => {
+          updater.ready = true;
+          // maybe state changed before mount
+          updater.dirty && forceUpdate({});
+          return () => {
+            updaters.splice(updaters.indexOf(updater), 1);
           };
-          let ps: Array<Promise<any>> = [];
-          produce<any, any>(payload, (pay: any) => {
-            for (const beforeEffect of hookMap.beforeEffect as Array<
-              CubeState.BeforeEffectHook<S>
-            >) {
-              const p = beforeEffect({
-                storeName,
-                effectName: fnName,
-                payload: pay,
-                extra,
-                ...effectFn
-              });
-              isPromise(p) && ps.push(p);
-            }
-          });
-          await Promise.all(ps);
-          let result = null;
-          let error = null;
-          try {
-            result = await originalEffect(effectFn, payload, ...(extra || []));
-          } catch (e) {
-            error = e;
-          }
-          ps = [];
-          produce<any, any>(result, (res: any) => {
-            for (const afterEffect of hookMap.afterEffect as Array<
-              CubeState.AfterEffectHook<S>
-            >) {
-              const p = afterEffect({
-                storeName,
-                effectName: fnName,
+        }, []);
+
+        return selector(_state);
+      }
+
+      let customEffect = {};
+      if (typeof initOption.extendEffect === "function") {
+        customEffect = initOption.extendEffect({
+          select: getState,
+          update: (s: Partial<MergedState>) =>
+            wrapHook(() => setState(s), "setState")
+        });
+      }
+
+      if (typeof mergedEffects === "object") {
+        Object.keys(mergedEffects).forEach(fnName => {
+          const originalEffect = mergedEffects[fnName];
+          // @ts-ignore
+          _effects[fnName] = async function<A, B>(payload: A, ...extra: B[]) {
+            const effectFn = {
+              async call<A, ER>(fn: CubeState.CalledFn<A, ER>, payload: A) {
+                const res = await fn(payload);
+                return res;
+              },
+              select: getState,
+              update: (s: Partial<MergedState>) =>
+                wrapHook(() => setState(s), fnName + " update"),
+              ...customEffect,
+              storeMap
+            };
+            let ps: Array<Promise<any>> = [];
+            produce<any, any>(payload, (pay: any) => {
+              for (const beforeEffect of hookMap.beforeEffect as Array<
+                CubeState.BeforeEffectHook<MergedState>
+              >) {
+                const p = beforeEffect({
+                  storeName: newName,
+                  effectName: fnName,
+                  payload: pay,
+                  extra,
+                  ...effectFn
+                });
+                isPromise(p) && ps.push(p);
+              }
+            });
+            await Promise.all(ps);
+            let result = null;
+            let error = null;
+            try {
+              result = await originalEffect(
+                effectFn,
                 payload,
-                result: res,
-                ...effectFn
-              });
-              isPromise(p) && ps.push(p);
+                ...(extra || [])
+              );
+            } catch (e) {
+              error = e;
             }
-          });
-          await Promise.all(ps);
-          if (error) {
-            throw error;
-          }
-          return result;
-        };
-      });
+            ps = [];
+            produce<any, any>(result, (res: any) => {
+              for (const afterEffect of hookMap.afterEffect as Array<
+                CubeState.AfterEffectHook<MergedState>
+              >) {
+                const p = afterEffect({
+                  storeName: newName,
+                  effectName: fnName,
+                  payload,
+                  result: res,
+                  ...effectFn
+                });
+                isPromise(p) && ps.push(p);
+              }
+            });
+            await Promise.all(ps);
+            if (error) {
+              throw error;
+            }
+            return result;
+          };
+        });
+      }
+
+      if (typeof mergedReducers === "object") {
+        Object.keys(mergedReducers).forEach(fnName => {
+          const isPure = initOption.pureChecker(fnName);
+          // @ts-ignore
+          _reducers[fnName] = function(...payload: any) {
+            let result: any;
+            const originalReducer = mergedReducers[fnName];
+            const reducer = (s: MergedState) =>
+              wrapHook(() => originalReducer(s, ...payload), fnName, payload);
+            // immer don't support circular object
+            const nextState: MergedState = isPure
+              ? reducer(_state)
+              : produce<MergedState, MergedState>(_state, reducer);
+            setState(nextState);
+            return result;
+          } as CubeState.EnhanceReducerFn<
+            R[Extract<keyof (R extends undefined ? undefined : R), string>]
+          >;
+        });
+      }
+
+      function wrapHook(execute: Function, fnName: string, payload?: any) {
+        let result: any;
+        (hookMap.beforeReducer || []).forEach(
+          (beforeReducer: CubeState.ReducerHook) =>
+            beforeReducer({
+              storeName: newName,
+              reducerName: fnName,
+              payload: payload || _state
+            })
+        );
+        result = execute();
+        (hookMap.afterReducer || []).forEach(
+          (afterReducer: CubeState.ReducerHook) =>
+            afterReducer({
+              storeName: newName,
+              reducerName: fnName,
+              payload: payload || result
+            })
+        );
+        return result;
+      }
+
+      function getState<P>(selector: CubeState.StateSelector<MergedState, P>) {
+        return selector(_state);
+      }
+
+      function setState(newState: Partial<MergedState>) {
+        const oldState = _state;
+        _state = { ...oldState, ...newState };
+        updaters.forEach(updater => {
+          updater.dirty = true;
+          updater.ready && updater(oldState, _state);
+        });
+      }
+
+      const storeItem = {
+        name: newName,
+        stateType: _state,
+        reducers: _reducers,
+        effects: _effects,
+        getState,
+        useStore,
+        extend
+      };
+
+      (storeItem as any)._opt = { ...opt, ...extOpt };
+      // only used for typing
+      delete storeItem.stateType;
+
+      storeMap[newName] = storeItem as CubeState.StoreItem;
+
+      return storeItem;
     }
 
-    const reducers = {} as CubeState.Reducers<R>;
-    if (typeof storeReducers === "object") {
-      Object.keys(storeReducers).forEach(fnName => {
-        const isPure = initOption.pureChecker(fnName);
-        // @ts-ignore
-        reducers[fnName] = function(...payload: any) {
-          let result: any;
-          const originalReducer = storeReducers[fnName];
-          const reducer = (s: S) =>
-            wrapHook(() => originalReducer(s, ...payload), fnName, payload);
-          // immer don't support circular object
-          const nextState: S = isPure
-            ? reducer(storeState)
-            : produce<S, S>(storeState, reducer);
-          setState(nextState);
-          return result;
-        } as CubeState.EnhanceReducerFn<
-          R[Extract<keyof (R extends undefined ? undefined : R), string>]
-        >;
-      });
-    }
-
-    function wrapHook(execute: Function, fnName: string, payload?: any) {
-      let result: any;
-      (hookMap.beforeReducer || []).forEach(
-        (beforeReducer: CubeState.ReducerHook) =>
-          beforeReducer({
-            storeName,
-            reducerName: fnName,
-            payload: payload || storeState
-          })
-      );
-      result = execute();
-      (hookMap.afterReducer || []).forEach(
-        (afterReducer: CubeState.ReducerHook) =>
-          afterReducer({
-            storeName,
-            reducerName: fnName,
-            payload: payload || result
-          })
-      );
-      return result;
-    }
-
-    function getState<P>(selector: CubeState.StateSelector<S, P>) {
-      return selector(storeState);
-    }
-
-    function setState(newState: Partial<S>) {
-      const oldState = storeState;
-      storeState = { ...oldState, ...newState };
-      updaters.forEach(updater => {
-        updater.dirty = true;
-        updater.ready && updater(oldState, storeState);
-      });
-    }
-
-    const newStore = {
-      ...rest,
-      name: storeName,
-      stateType: storeState,
-      reducers,
-      effects,
-      useStore,
-      getState
-    };
-
-    // only used for typing
-    delete newStore.stateType;
+    const newStore = extend(opt as any);
 
     if (typeof initOption.onCreate === "function") {
-      initOption.onCreate(newStore);
+      initOption.onCreate(newStore as CubeState.StoreItem);
     }
-
-    storeMap[storeName] = newStore;
 
     return newStore;
   }

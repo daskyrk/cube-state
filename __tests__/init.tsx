@@ -37,7 +37,24 @@ describe("init and create", () => {
 
     expect(stateStore).toMatchInlineSnapshot(`
       Object {
+        "_opt": Object {
+          "name": "state",
+          "state": Object {
+            "a": 1,
+            "b": "string",
+            "c": Array [
+              0,
+              Object {
+                "k": "second",
+              },
+            ],
+            "d": Object {
+              "obj": true,
+            },
+          },
+        },
         "effects": Object {},
+        "extend": [Function],
         "getState": [Function],
         "name": "state",
         "reducers": Object {},
@@ -103,7 +120,7 @@ describe("init and create", () => {
   it("throw error when create store with duplicate name", () => {
     try {
       cube.createStore({
-        name: "effect",
+        name: "state",
         state: {
           a: 1
         },
@@ -115,7 +132,20 @@ describe("init and create", () => {
         }
       });
     } catch (e) {
-      expect(e.message).toEqual("store name：effect duplicated!");
+      expect(e.message).toEqual("[cube-state] Store name：state duplicated!");
+    }
+  });
+
+  it("throw error when extend store with duplicate name", () => {
+    try {
+      stateStore.extend({
+        name: "state",
+        state: {
+          a: 1
+        }
+      });
+    } catch (e) {
+      expect(e.message).toEqual("[cube-state] Store name：state duplicated!");
     }
   });
 

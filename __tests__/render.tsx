@@ -439,6 +439,198 @@ describe("update and render", () => {
     await waitForElement(() => getByText("value: {}"));
   });
 
+  it("re-renders with extend store", async () => {
+    let counterRenderCount = 0;
+    let extendRenderCount = 0;
+    let controlRenderCount = 0;
+    const extendCountStore = countStore.extend({
+      state: {
+        extendCount: 0
+      },
+      reducers: {
+        addExtend(state, num: number) {
+          state.extendCount += num;
+        },
+        addOriginal(state, num: number) {
+          state.count += num;
+        }
+      }
+    });
+
+    function Counter() {
+      const count = countStore.useStore(s => s.count);
+      const baseCountCopy = extendCountStore.useStore(s => s.count);
+      counterRenderCount++;
+      return (
+        <div>
+          baseCount: {count}, baseCountCopy: {baseCountCopy}
+        </div>
+      );
+    }
+
+    function ExtendCounter() {
+      const extendCount = extendCountStore.useStore(s => s.extendCount);
+      extendRenderCount++;
+      return <div>extendCount: {extendCount}</div>;
+    }
+
+    function Control() {
+      const baseAdd = countStore.reducers.addCount;
+      const extendAdd = extendCountStore.reducers.addCount;
+      const addOriginal = extendCountStore.reducers.addOriginal;
+      const addExtend = extendCountStore.reducers.addExtend;
+      controlRenderCount++;
+      return (
+        <div>
+          <button onClick={baseAdd}>baseAdd</button>
+          <button onClick={extendAdd}>extendAdd</button>
+          <button onClick={() => addOriginal(1)}>addOriginal</button>
+          <button onClick={() => addExtend(1)}>addExtend</button>
+        </div>
+      );
+    }
+
+    const { getByText } = render(
+      <>
+        <Counter />
+        <ExtendCounter />
+        <Control />
+      </>
+    );
+
+    expect(counterRenderCount).toBe(1);
+    expect(extendRenderCount).toBe(1);
+    expect(controlRenderCount).toBe(1);
+
+    fireEvent.click(getByText("baseAdd"));
+    await waitForElement(() => getByText("baseCount: 1, baseCountCopy: 0"));
+    expect(counterRenderCount).toBe(2);
+    expect(extendRenderCount).toBe(1);
+    expect(controlRenderCount).toBe(1);
+
+    fireEvent.click(getByText("extendAdd"));
+    await waitForElement(() => getByText("baseCount: 1, baseCountCopy: 1"));
+    expect(counterRenderCount).toBe(3);
+    expect(extendRenderCount).toBe(1);
+    expect(controlRenderCount).toBe(1);
+
+    fireEvent.click(getByText("addOriginal"));
+    await waitForElement(() => getByText("baseCount: 1, baseCountCopy: 2"));
+    expect(counterRenderCount).toBe(4);
+    expect(extendRenderCount).toBe(1);
+    expect(controlRenderCount).toBe(1);
+
+    fireEvent.click(getByText("addExtend"));
+    await waitForElement(() => getByText("extendCount: 1"));
+    expect(counterRenderCount).toBe(4);
+    expect(extendRenderCount).toBe(2);
+    expect(controlRenderCount).toBe(1);
+  });
+
+  it("create new by extend store", async () => {
+    const baseStore = createStore({
+      name: "base",
+      state: {
+        count: 0
+      },
+      reducers: {
+        addCount(state) {
+          state.count += 1;
+        }
+      }
+    });
+
+    const baseExtendStore = baseStore.extend({
+      name: "baseExtend",
+      state: {
+        count: 0
+      },
+      reducers: {
+        addCount(state) {
+          state.count += 1;
+        }
+      }
+    });
+
+    const baseExtendStore2 = baseStore.extend({
+      name: "baseExtend2",
+      state: {
+        count: 0,
+        other: 0
+      },
+      reducers: {
+        addCount(state) {
+          state.count += 1;
+        },
+        addOther(state) {
+          state.other += 1;
+        }
+      }
+    });
+
+    function Control() {
+      const count = baseStore.useStore(s => s.count);
+      const extendCount = baseExtendStore.useStore(s => s.count);
+      const [extendCount2, other] = baseExtendStore2.useStore(s => [
+        s.count,
+        s.other
+      ]);
+
+      const baseAdd = baseStore.reducers.addCount;
+      const extendAdd = baseExtendStore.reducers.addCount;
+      const extendAdd2 = baseExtendStore2.reducers.addCount;
+      const addOther = baseExtendStore2.reducers.addOther;
+      return (
+        <div>
+          <button onClick={baseAdd}>baseAdd</button>
+          <button onClick={extendAdd}>extendAdd</button>
+          <button onClick={extendAdd2}>extendAdd2</button>
+          <button onClick={addOther}>addOther</button>
+          <div>
+            base: {count}, extend: {extendCount}, extend2: {extendCount2},
+            other: {other}
+          </div>
+        </div>
+      );
+    }
+
+    const { getByText } = render(
+      <>
+        <Control />
+      </>
+    );
+
+    await waitForElement(() =>
+      getByText("base: 0, extend: 0, extend2: 0, other: 0")
+    );
+    expect(baseStore.getState(s => s)).not.toBe(
+      baseExtendStore.getState(s => s)
+    );
+    expect(baseStore.getState(s => s)).toEqual(
+      baseExtendStore.getState(s => s)
+    );
+
+    fireEvent.click(getByText("baseAdd"));
+    await waitForElement(() =>
+      getByText("base: 1, extend: 0, extend2: 0, other: 0")
+    );
+
+    fireEvent.click(getByText("extendAdd"));
+    await waitForElement(() =>
+      getByText("base: 1, extend: 1, extend2: 0, other: 0")
+    );
+
+    fireEvent.click(getByText("extendAdd2"));
+    await waitForElement(() =>
+      getByText("base: 1, extend: 1, extend2: 1, other: 0")
+    );
+
+    fireEvent.click(getByText("addOther"));
+    await waitForElement(() =>
+      getByText("base: 1, extend: 1, extend2: 1, other: 1")
+    );
+  });
+
   // it('can throw an error in reducer and effect', async () => {
   //   console.error = jest.fn()
 

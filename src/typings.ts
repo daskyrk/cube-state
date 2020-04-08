@@ -26,7 +26,13 @@ export declare namespace CubeState {
     state: S;
     reducers?: R extends undefined ? undefined : R;
     effects?: E extends undefined ? undefined : E;
-    [k: string]: any;
+  }
+
+  interface ExtOpt<S, R, E> {
+    name?: string;
+    state?: S;
+    reducers?: R extends undefined ? undefined : R;
+    effects?: E extends undefined ? undefined : E;
   }
 
   type StateSelector<S, P> = (state: S) => P;
