@@ -261,12 +261,21 @@ export default function init(initOpt: CubeState.InitOpt = {}) {
     }
 
     const newStore = extend(opt as any);
+    // overwrite type
+    type newStoreType = Merge<
+      typeof newStore,
+      {
+        stateType: S;
+        reducers: CubeState.Reducers<R>;
+        effects: CubeState.Effects<E>;
+      }
+    >;
 
     if (typeof initOption.onCreate === "function") {
       initOption.onCreate(newStore as CubeState.StoreItem);
     }
 
-    return newStore;
+    return (newStore as unknown) as newStoreType;
   }
 
   function createFlatStore<
