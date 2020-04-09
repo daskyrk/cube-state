@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.1.1](https://github.com/daskyrk/cube-state/compare/v1.1.0...v1.1.1) (2020-04-09)
+
+
+### Bug Fixes
+
+* effects & reducers lost type after createStore ([85a7325](https://github.com/daskyrk/cube-state/commit/85a7325))
+
 ## [1.1.0](https://github.com/daskyrk/cube-state/compare/v1.0.7...v1.1.0) (2020-04-08)
 
 
