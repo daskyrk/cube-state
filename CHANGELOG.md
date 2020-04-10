@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.1.2](https://github.com/daskyrk/cube-state/compare/v1.1.1...v1.1.2) (2020-04-10)
+
+
+### Bug Fixes
+
+* restore support extra store property ([a9177cf](https://github.com/daskyrk/cube-state/commit/a9177cf))
+
 ### [1.1.1](https://github.com/daskyrk/cube-state/compare/v1.1.0...v1.1.1) (2020-04-09)
 
 
