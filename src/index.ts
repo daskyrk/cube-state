@@ -45,12 +45,19 @@ export default function init(initOpt: CubeState.InitOpt = {}) {
     R extends CubeState.EnhanceReducers<S>,
     E extends CubeState.EnhanceEffects<S>
   >(opt: CubeState.Opt<S, R, E>) {
+    const {
+      name: originName,
+      state: originState,
+      effects: originEffect,
+      reducers: originReducers,
+      ...rest
+    } = opt;
     function extend<
       ES,
       ER extends CubeState.EnhanceReducers<Merge<S, ES>>,
       EE extends CubeState.EnhanceEffects<Merge<S, ES>>
     >(extOpt: CubeState.ExtOpt<ES, ER, EE>) {
-      const { name, state, reducers, effects } = extOpt;
+      const { name, state, reducers, effects, ...extRest } = extOpt;
       // if provide name, generate a new store
       if (name && storeMap[name] && !isProd) {
         throw new Error(`[cube-state] Store name：${name} duplicated!`);
@@ -242,6 +249,8 @@ export default function init(initOpt: CubeState.InitOpt = {}) {
       }
 
       const storeItem = {
+        ...rest,
+        ...extRest,
         name: newName,
         stateType: _state,
         reducers: _reducers,

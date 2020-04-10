@@ -26,6 +26,9 @@ describe("init and create", () => {
       d: {
         obj: true
       }
+    },
+    extra: {
+      test: true
     }
   });
 
@@ -38,6 +41,9 @@ describe("init and create", () => {
     expect(stateStore).toMatchInlineSnapshot(`
       Object {
         "_opt": Object {
+          "extra": Object {
+            "test": true,
+          },
           "name": "state",
           "state": Object {
             "a": 1,
@@ -55,6 +61,9 @@ describe("init and create", () => {
         },
         "effects": Object {},
         "extend": [Function],
+        "extra": Object {
+          "test": true,
+        },
         "getState": [Function],
         "name": "state",
         "reducers": Object {},
