@@ -92,14 +92,14 @@ export default function init(initOpt: CubeState.InitOpt = {}) {
       const updaters: Array<CubeState.Updater<MergedState>> = [];
 
       function useStore<P>(selector: CubeState.StateSelector<MergedState, P>) {
-        const forceUpdate = useState({})[1];
+        const forceUpdate = useState(_state)[1];
 
         const updater: any = (
           oldState: MergedState,
           nextState: MergedState
         ) => {
           const shouldUpdate = !equal(selector(oldState), selector(nextState));
-          shouldUpdate && forceUpdate({});
+          shouldUpdate && forceUpdate(nextState);
           updater.dirty = false;
         };
         updaters.push(updater);
