@@ -12,8 +12,8 @@ English | [简体中文](./README-cn.md)
 ## Features
 
 - Perfect Typescript support
-- dva likely API and structure
-- small
+- API and structure similar to dva
+- tiny
 
 ## Try It Online
 
