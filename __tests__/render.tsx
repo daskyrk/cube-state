@@ -9,7 +9,7 @@ import {
 } from "@testing-library/react";
 import init from "../src/index";
 
-export function sleep<T>(time: number, data?: T, flag = true): Promise<T> {
+function sleep<T>(time: number, data?: T, flag = true): Promise<T> {
   return new Promise((resolve, reject) => {
     setTimeout(() => {
       const fn = flag ? resolve : reject;

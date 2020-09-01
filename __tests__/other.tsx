@@ -9,7 +9,15 @@ import {
 } from "@testing-library/react";
 import init from "../src";
 import initLoading from "../src/plugin/loading";
-import { sleep } from "./render";
+
+function sleep<T>(time: number, data?: T, flag = true): Promise<T> {
+  return new Promise((resolve, reject) => {
+    setTimeout(() => {
+      const fn = flag ? resolve : reject;
+      fn(data);
+    }, time);
+  });
+}
 
 const consoleError = console.error;
 afterEach(() => {
