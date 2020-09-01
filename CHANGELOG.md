@@ -2,6 +2,19 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.2.0](https://github.com/daskyrk/cube-state/compare/v1.1.3...v1.2.0) (2020-09-01)
+
+
+### Bug Fixes
+
+* prevent some check rerender plugin warning ([10f3f01](https://github.com/daskyrk/cube-state/commit/10f3f01))
+* revert forceUpdate for not cover third position usage ([45eece6](https://github.com/daskyrk/cube-state/commit/45eece6))
+
+
+### Features
+
+* adjust forceUpdate to avoid why-did-you-render mistake check ([389a483](https://github.com/daskyrk/cube-state/commit/389a483))
+
 ### [1.1.3](https://github.com/daskyrk/cube-state/compare/v1.1.2...v1.1.3) (2020-06-03)
 
 ### [1.1.2](https://github.com/daskyrk/cube-state/compare/v1.1.1...v1.1.2) (2020-04-10)
