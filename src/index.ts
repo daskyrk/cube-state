@@ -197,7 +197,6 @@ export default function init(initOpt: CubeState.InitOpt = {}) {
           const isPure = initOption.pureChecker(fnName);
           // @ts-ignore
           _reducers[fnName] = function(...payload: any) {
-            let result: any;
             const originalReducer = mergedReducers[fnName];
             const reducer = (s: MergedState) =>
               wrapHook(() => originalReducer(s, ...payload), fnName, payload);
@@ -206,7 +205,7 @@ export default function init(initOpt: CubeState.InitOpt = {}) {
               ? reducer(_state)
               : produce<MergedState, MergedState>(_state, reducer);
             setState(nextState);
-            return result;
+            return nextState;
           } as CubeState.EnhanceReducerFn<
             R[Extract<keyof (R extends undefined ? undefined : R), string>]
           >;
