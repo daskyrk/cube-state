@@ -2,7 +2,7 @@
 [English](./README.md) | 简体中文
 
 # cube-state
-
+hello
 > 一个基于 Hooks 的React状态管理库，灵感来自于 [stamen](https://github.com/forsigner/stamen)
 
 [![npm version](https://img.shields.io/npm/v/cube-state.svg?logo=npm)](https://www.npmjs.com/package/cube-state)
