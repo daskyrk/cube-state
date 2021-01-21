@@ -80,7 +80,7 @@
   },
   "dependencies": {
     "fast-deep-equal": "^2.0.1",
-    "immer": "^5.3.6"
+    "immer": "^8.0.1"
   },
   "peerDependencies": {
     "react": ">=16.8"
