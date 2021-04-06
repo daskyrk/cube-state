@@ -113,7 +113,7 @@ export default function init(initOpt: CubeState.InitOpt = {}) {
           };
         }, []);
 
-        return selector(_state);
+        return selector(_state) as Readonly<P>; // mark as readonly but not really freeze it
       }
 
       let customEffect = {};
@@ -261,6 +261,7 @@ export default function init(initOpt: CubeState.InitOpt = {}) {
 
       (storeItem as any)._opt = { ...opt, ...extOpt };
       // only used for typing
+      // @ts-ignore
       delete storeItem.stateType;
 
       storeMap[newName] = storeItem as CubeState.StoreItem;

@@ -5,7 +5,7 @@ import {
   cleanup,
   fireEvent,
   render,
-  waitForElement
+  waitFor,
 } from "@testing-library/react";
 import init from "../src";
 import initLoading from "../src/plugin/loading";
@@ -52,11 +52,11 @@ describe("plugin", () => {
     }
 
     const { getByText } = render(<Counter />);
-    await waitForElement(() => getByText("count: 0"));
+    await waitFor(() => getByText("count: 0"));
     expect(snapshot).toEqual([[0, false]]);
 
     await act(() => countStore.effects.setLater(1));
     expect(snapshot).toEqual([[0, false], [0, true], [1, true], [1, false]]);
-    await waitForElement(() => getByText("count: 1"));
+    await waitFor(() => getByText("count: 1"));
   });
 });

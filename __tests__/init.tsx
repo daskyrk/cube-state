@@ -4,7 +4,7 @@ import {
   cleanup,
   fireEvent,
   render,
-  waitForElement
+  waitFor
 } from "@testing-library/react";
 import init from "../src/index";
 
