@@ -14,7 +14,7 @@ afterEach(() => {
   console.error = consoleError;
 });
 
-describe("init and create", () => {
+describe("init and create in singleton mode", () => {
   const cube = init();
 
   const stateStore = cube.createStore({
@@ -181,6 +181,147 @@ describe("init and create", () => {
 
   //   render(<Counter />);
   // });
+});
+
+describe("init and create in duplicate mode", () => {
+  const cube = init({singleton: false});
+
+  const stateStore = cube.createStore({
+    name: "state",
+    state: {
+      a: 1,
+      b: "string",
+      c: [0, { k: "second" }],
+      d: {
+        obj: true
+      }
+    },
+    extra: {
+      test: true
+    }
+  });
+
+  it("shape of return by init and createStore", () => {
+    expect(typeof cube.createStore).toBe("function");
+    expect(typeof cube.createFlatStore).toBe("function");
+    expect(typeof cube.storeMap).toBe("object");
+    expect(typeof cube.use).toBe("function");
+
+    expect(stateStore).toMatchInlineSnapshot(`
+      Object {
+        "_opt": Object {
+          "extra": Object {
+            "test": true,
+          },
+          "name": "state",
+          "state": Object {
+            "a": 1,
+            "b": "string",
+            "c": Array [
+              0,
+              Object {
+                "k": "second",
+              },
+            ],
+            "d": Object {
+              "obj": true,
+            },
+          },
+        },
+        "effects": Object {},
+        "extend": [Function],
+        "extra": Object {
+          "test": true,
+        },
+        "getState": [Function],
+        "name": "state",
+        "reducers": Object {},
+        "useStore": [Function],
+      }
+    `);
+  });
+
+  it("return same state with selector or not", () => {
+    function Counter() {
+      const fullState = stateStore.useStore(s => s);
+      const sameFullState = stateStore.useStore(s => s);
+      expect(fullState).toEqual(sameFullState);
+      expect(fullState).toEqual({
+        a: 1,
+        b: "string",
+        c: [0, { k: "second" }],
+        d: {
+          obj: true
+        }
+      });
+
+      return null;
+    }
+
+    render(<Counter />);
+  });
+
+  it("create store without effects", () => {
+    const reducerStore = cube.createStore({
+      name: "reducer",
+      state: {
+        a: 1
+      },
+      reducers: {
+        addA(state) {
+          state.a += 1;
+        }
+      }
+    });
+    expect(typeof reducerStore.reducers.addA).toBe("function");
+    expect(reducerStore.effects).toEqual({});
+  });
+
+  it("create store without reducers", () => {
+    const effectStore = cube.createStore({
+      name: "effect",
+      state: {
+        a: 1
+      },
+      effects: {
+        async updateLater({ update }) {
+          const newData = await Promise.resolve(2);
+          update({ a: newData });
+        }
+      }
+    });
+
+    expect(typeof effectStore.effects.updateLater).toBe("function");
+    expect(effectStore.reducers).toEqual({});
+  });
+
+  it("return exist store when create store with duplicate name", () => {
+    const newStateStore = cube.createStore({
+      name: "state",
+      state: {
+        a: 1
+      },
+      effects: {
+        async updateLater({ update }) {
+          const newData = await Promise.resolve(2);
+          update({ a: newData });
+        }
+      }
+    });
+
+    expect(newStateStore).boBe(stateStore);
+  });
+
+  it("throw error when extend store with duplicate name", () => {
+      const newStateStore = stateStore.extend({
+        name: "state",
+        state: {
+          a: 1
+        }
+      });
+      expect(newStateStore).boBe(stateStore);
+  });
+
 });
 
 describe("get & set state out of component", () => {

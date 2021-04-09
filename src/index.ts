@@ -19,6 +19,7 @@ export default function init(initOpt: CubeState.InitOpt = {}) {
   const storeMap: CubeState.StoreMap = {};
   const initOption = {
     pureChecker: (fnName: string) => fnName.startsWith("$_"),
+    singleton: true,
     ...initOpt
   };
 
@@ -60,7 +61,7 @@ export default function init(initOpt: CubeState.InitOpt = {}) {
       const { name, state, reducers, effects, ...extRest } = extOpt;
       // if provide name, generate a new store
       if (name && storeMap[name]) {
-        if(initOption.allowDuplicatedStore)return storeMap[name];
+        if(!initOption.singleton)return storeMap[name]; // if not singleton mode, return exist store
         if(!isProd)throw new Error(`[cube-state] Store name：${name} duplicated!`);
       }
 
