@@ -13,7 +13,7 @@ English | [简体中文](./README-cn.md)
 
 - Perfect Typescript support
 - API and structure similar to dva
-- tiny
+- Tiny
 
 ## Try It Online
 
@@ -147,6 +147,11 @@ export function doubleCount() {
   return 2 * counterStore.getState(s => s.count);
 }
 ```
+
+### Singleton mode
+
+Pass `singleton: true` to init options will enable singleton mode, which will return the last created store instance with the same name.
+If the store file will be execute multiple times, eg. in module federation, it would be useful.
 
 ### Use in class components
 
