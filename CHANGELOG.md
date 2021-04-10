@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.3.0](https://github.com/daskyrk/cube-state/compare/v1.2.3...v1.3.0) (2021-04-10)
+
+
+### Features
+
+* support singleton mode ([#20](https://github.com/daskyrk/cube-state/issues/20)) ([029e775](https://github.com/daskyrk/cube-state/commit/029e775fb7c43684364dee80bfe816f91c6a6077))
+
 ### [1.2.3](https://github.com/daskyrk/cube-state/compare/v1.2.2...v1.2.3) (2021-04-06)
 
 ### [1.2.2](https://github.com/daskyrk/cube-state/compare/v1.2.1...v1.2.2) (2021-04-06)
