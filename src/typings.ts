@@ -19,6 +19,7 @@ export declare namespace CubeState {
     extendEffect?(config: extendEffectConfig): object;
     onCreate?(store: StoreItem): any;
     pureChecker?(fnName: string): boolean;
+    singleton?: boolean;
   }
 
   interface Opt<S, R, E> {

@@ -183,6 +183,64 @@ describe("init and create", () => {
   // });
 });
 
+describe("init and create in singleton mode", () => {
+  const cube = init({singleton: true});
+
+  const stateStore = cube.createStore({
+    name: "state",
+    state: {
+      a: 1,
+    },
+    extra: {
+      test: true
+    }
+  });
+
+  it("return exist store when create store with duplicate name", () => {
+    const newStateStore = cube.createStore({
+      name: "state",
+      state: {
+        b: 1
+      },
+      effects: {
+        async updateLater({ update }) {
+          const newData = await Promise.resolve(2);
+          update({ b: newData });
+        }
+      }
+    });
+
+    expect(newStateStore).toBe(stateStore);
+  });
+
+  it("return exist store when extend store with duplicate name", () => {
+      const newStateStore = stateStore.extend({
+        name: "state",
+        state: {
+          b: 1
+        }
+      });
+
+      expect(newStateStore).toBe(stateStore);
+      expect(newStateStore.getState(s=>s)).toEqual({a: 1});
+      expect(stateStore.getState(s=>s)).toEqual({a: 1});
+  });
+
+  it("return new store when extend store with new name", () => {
+    const newStateStore = stateStore.extend({
+      name: "state1",
+      state: {
+        b: 1
+      }
+    });
+    
+    expect(newStateStore).not.toBe(stateStore);
+    expect(newStateStore.getState(s=>s)).toEqual({a: 1, b:1});
+    expect(stateStore.getState(s=>s)).toEqual({a: 1});
+});
+
+});
+
 describe("get & set state out of component", () => {
   const { createStore, storeMap } = init();
 

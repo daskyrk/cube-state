@@ -59,8 +59,9 @@ export default function init(initOpt: CubeState.InitOpt = {}) {
     >(extOpt: CubeState.ExtOpt<ES, ER, EE>) {
       const { name, state, reducers, effects, ...extRest } = extOpt;
       // if provide name, generate a new store
-      if (name && storeMap[name] && !isProd) {
-        throw new Error(`[cube-state] Store name：${name} duplicated!`);
+      if (name && storeMap[name]) {
+        if(initOption.singleton)return storeMap[name]; // if singleton mode, return exist store
+        if(!isProd)throw new Error(`[cube-state] Store name：${name} duplicated!`);
       }
 
       type MergedState = Merge<S, ES>;
