@@ -220,11 +220,24 @@ describe("init and create in singleton mode", () => {
           b: 1
         }
       });
-      
+
       expect(newStateStore).toBe(stateStore);
       expect(newStateStore.getState(s=>s)).toEqual({a: 1});
       expect(stateStore.getState(s=>s)).toEqual({a: 1});
   });
+
+  it("return new store when extend store with new name", () => {
+    const newStateStore = stateStore.extend({
+      name: "state1",
+      state: {
+        b: 1
+      }
+    });
+    
+    expect(newStateStore).not.toBe(stateStore);
+    expect(newStateStore.getState(s=>s)).toEqual({a: 1, b:1});
+    expect(stateStore.getState(s=>s)).toEqual({a: 1});
+});
 
 });
 
