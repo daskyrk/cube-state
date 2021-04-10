@@ -190,11 +190,6 @@ describe("init and create in singleton mode", () => {
     name: "state",
     state: {
       a: 1,
-      b: "string",
-      c: [0, { k: "second" }],
-      d: {
-        obj: true
-      }
     },
     extra: {
       test: true
@@ -205,12 +200,12 @@ describe("init and create in singleton mode", () => {
     const newStateStore = cube.createStore({
       name: "state",
       state: {
-        a: 1
+        b: 1
       },
       effects: {
         async updateLater({ update }) {
           const newData = await Promise.resolve(2);
-          update({ a: newData });
+          update({ b: newData });
         }
       }
     });
@@ -222,10 +217,13 @@ describe("init and create in singleton mode", () => {
       const newStateStore = stateStore.extend({
         name: "state",
         state: {
-          a: 1
+          b: 1
         }
       });
+      
       expect(newStateStore).toBe(stateStore);
+      expect(newStateStore.getState(s=>s)).toEqual({a: 1});
+      expect(stateStore.getState(s=>s)).toEqual({a: 1});
   });
 
 });
