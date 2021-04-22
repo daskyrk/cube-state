@@ -18,7 +18,7 @@
     "lint": "tslint -c tslint.json \"src/**/*.{ts,tsx}\"",
     "lint:fix": "tslint -c tslint.json \"src/**/*.{ts,tsx}\" --fix",
     "pretest": "tsc __tests__/*.tsx --noEmit --jsx preserve -m None -t ESNext --moduleResolution Node --esModuleInterop --skipLibCheck",
-    "test": "jest --verbose",
+    "test": "jest --verbose --coverage",
     "test:watch": "jest --watch --verbose",
     "coveralls": "jest --coverage && cat ./coverage/lcov.info | ./node_modules/coveralls/bin/coveralls.js && rm -rf ./coverage",
     "prepublishOnly": "npm run copy && npm run editPackage",
