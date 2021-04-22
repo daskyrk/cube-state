@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.3.1](https://github.com/daskyrk/cube-state/compare/v1.3.0...v1.3.1) (2021-04-22)
+
+
+### Bug Fixes
+
+* return type is any ([94e5f5c](https://github.com/daskyrk/cube-state/commit/94e5f5cdce6e136355d810a904a4bebf9e0cf719))
+
 ## [1.3.0](https://github.com/daskyrk/cube-state/compare/v1.2.3...v1.3.0) (2021-04-10)
 
 
