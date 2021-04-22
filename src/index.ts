@@ -60,8 +60,8 @@ export default function init(initOpt: CubeState.InitOpt = {}) {
       const { name, state, reducers, effects, ...extRest } = extOpt;
       // if provide name, generate a new store
       if (name && storeMap[name]) {
-        if(initOption.singleton)return storeMap[name]; // if singleton mode, return exist store
-        if(!isProd)throw new Error(`[cube-state] Store name：${name} duplicated!`);
+        if (initOption.singleton) return storeMap[name] as never; // if singleton mode, return exist store
+        if (!isProd) throw new Error(`[cube-state] Store name：${name} duplicated!`);
       }
 
       type MergedState = Merge<S, ES>;
@@ -130,7 +130,7 @@ export default function init(initOpt: CubeState.InitOpt = {}) {
         Object.keys(mergedEffects).forEach(fnName => {
           const originalEffect = mergedEffects[fnName];
           // @ts-ignore
-          _effects[fnName] = async function<A, B>(payload: A, ...extra: B[]) {
+          _effects[fnName] = async function <A, B>(payload: A, ...extra: B[]) {
             const effectFn = {
               async call<A, ER>(fn: CubeState.CalledFn<A, ER>, payload: A) {
                 const res = await fn(payload);
@@ -197,7 +197,7 @@ export default function init(initOpt: CubeState.InitOpt = {}) {
         Object.keys(mergedReducers).forEach(fnName => {
           const isPure = initOption.pureChecker(fnName);
           // @ts-ignore
-          _reducers[fnName] = function(...payload: any) {
+          _reducers[fnName] = function (...payload: any) {
             const originalReducer = mergedReducers[fnName];
             const reducer = (s: MergedState) =>
               wrapHook(() => originalReducer(s, ...payload), fnName, payload);
