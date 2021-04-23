@@ -2,7 +2,7 @@
 
 name: TEST
 
-# Controls when the action will run. 
+# Controls when the action will run.
 on:
   # Triggers the workflow on push or pull request events but only for the master branch
   push:
@@ -23,5 +23,10 @@ jobs:
     steps:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v2
+
       - name: NPM Tests
         uses: anna-money/github-actions-npm@v2
+
+      - name: Codecov
+        uses: codecov/codecov-action@v1.4.1
+

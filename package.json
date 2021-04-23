@@ -20,7 +20,6 @@
     "pretest": "tsc __tests__/*.tsx --noEmit --jsx preserve -m None -t ESNext --moduleResolution Node --esModuleInterop --skipLibCheck",
     "test": "jest --verbose --coverage",
     "test:watch": "jest --watch --verbose",
-    "coveralls": "jest --coverage && cat ./coverage/lcov.info | ./node_modules/coveralls/bin/coveralls.js && rm -rf ./coverage",
     "prepublishOnly": "npm run copy && npm run editPackage",
     "copy": "copyfiles -u 1 src/plugin/* dist",
     "editPackage": "json -I -f package.json -e \"this.private=false; this.devDependencies=undefined; this.scripts=undefined; this.husky=undefined; this.commitlint=undefined; this.jest=undefined; this['lint-staged']=undefined;\"",

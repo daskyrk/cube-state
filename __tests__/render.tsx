@@ -25,7 +25,7 @@ afterEach(() => {
 });
 
 describe("update and render", () => {
-  const { createStore, storeMap, use } = init();
+  const { createStore, createFlatStore } = init();
 
   const countStore = createStore({
     name: "count",
@@ -218,6 +218,32 @@ describe("update and render", () => {
     expect(childRenderCount).toBe(4);
     expect(parentRenderCount).toBe(3);
   });
+
+  it('render right when call reducer in child component before parent mount', async () => {
+
+    const renderValue = [];
+    function Child() {
+      React.useEffect(() => {
+        countStore.reducers.addCount();
+      }, []);
+      return null;
+    }
+
+    function Parent() {
+      const count = countStore.useStore(s => s.count);
+      renderValue.push(count);
+      return <div>count: {count}<Child /></div>;
+    }
+
+    expect(countStore.getState(s => s.count)).toBe(0);
+    expect(renderValue).toEqual([])
+
+    const { getByText } = render(<Parent />);
+
+    expect(countStore.getState(s => s.count)).toBe(1);
+    await waitFor(() => getByText("count: 1"));
+    expect(renderValue).toEqual([0, 1])
+  })
 
   it("can batch updates", async () => {
     function Counter() {
@@ -629,6 +655,74 @@ describe("update and render", () => {
     await waitFor(() =>
       getByText("base: 1, extend: 1, extend2: 1, other: 1")
     );
+  });
+
+  it("create new by createFlatStore", async () => {
+    const flatStore = createFlatStore({
+      name: "flat",
+      state: {
+        count: 1,
+      },
+      effects: {
+        async setLater({ call, update }, newNum: number) {
+          const result = await call(() => sleep(100, newNum));
+          update({ count: result });
+        },
+      },
+      reducers: {
+        setCount(state, num: number) {
+          state.count = num;
+        },
+      }
+    });
+
+    expect(flatStore.getState(s => s.count)).toBe(1);
+    expect(typeof flatStore.setLater).toBe("function");
+    expect(typeof flatStore.setCount).toBe("function");
+    expect(typeof flatStore._effects).toBe("object");
+    expect(typeof flatStore._reducers).toBe("object");
+  });
+
+  it("execute pure reducer with circular object", async () => {
+    const obj = {} as any;
+    obj.obj = obj;
+
+    const circularStore = createStore({
+      name: "circular",
+      state: {
+        obj,
+      },
+      reducers: {
+        $_setState(state, extra: string) {
+          obj.extra = extra;
+          return {
+            obj,
+          }
+        },
+        setState(state, extra: string) {
+          obj.extra = extra;
+          return {
+            obj,
+          }
+        },
+      }
+    });
+
+    const objCopy = circularStore.getState(s => s.obj);
+    expect(objCopy.extra).toBeUndefined();
+    expect(objCopy).toBe(obj);
+
+    circularStore.reducers.$_setState('extra');
+    const objCopy2 = circularStore.getState(s => s.obj);
+    expect(objCopy2.extra).toBe('extra');
+    expect(objCopy2).toBe(obj);
+
+    try {
+      circularStore.reducers.setState('extra2');
+    } catch (error) {
+      expect(error.message).toBe('[Immer] Immer forbids circular references')
+    }
+
   });
 
   // it('can throw an error in reducer and effect', async () => {

@@ -11,7 +11,7 @@ const isProd = process.env.NODE_ENV === "production";
 const isPromise = (obj: PromiseLike<any>) => {
   return (
     !!obj &&
-    (typeof obj === "object" || typeof obj === "function") &&
+    typeof obj === "object" &&
     typeof obj.then === "function"
   );
 };
@@ -22,7 +22,7 @@ export default function init(initOpt: CubeState.InitOpt = {}) {
     ...initOpt
   };
 
-  const hookMap: CubeState.HookMap = {
+  const hookMap = {
     onError: [],
     beforeReducer: [],
     afterReducer: [],
@@ -158,17 +158,11 @@ export default function init(initOpt: CubeState.InitOpt = {}) {
               }
             });
             await Promise.all(ps);
-            let result = null;
-            let error = null;
-            try {
-              result = await originalEffect(
-                effectFn,
-                payload,
-                ...(extra || [])
-              );
-            } catch (e) {
-              error = e;
-            }
+            const result = await originalEffect(
+              effectFn,
+              payload,
+              ...extra
+            );
             ps = [];
             produce<any, any>(result, (res: any) => {
               for (const afterEffect of hookMap.afterEffect as Array<
@@ -185,9 +179,6 @@ export default function init(initOpt: CubeState.InitOpt = {}) {
               }
             });
             await Promise.all(ps);
-            if (error) {
-              throw error;
-            }
             return result;
           };
         });
@@ -215,21 +206,21 @@ export default function init(initOpt: CubeState.InitOpt = {}) {
 
       function wrapHook(execute: Function, fnName: string, payload?: any) {
         let result: any;
-        (hookMap.beforeReducer || []).forEach(
+        hookMap.beforeReducer.forEach(
           (beforeReducer: CubeState.ReducerHook) =>
             beforeReducer({
               storeName: newName,
               reducerName: fnName,
-              payload: payload || _state
+              payload
             })
         );
         result = execute();
-        (hookMap.afterReducer || []).forEach(
+        hookMap.afterReducer.forEach(
           (afterReducer: CubeState.ReducerHook) =>
             afterReducer({
               storeName: newName,
               reducerName: fnName,
-              payload: payload || result
+              payload
             })
         );
         return result;
