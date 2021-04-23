@@ -158,6 +158,21 @@ describe("init and create", () => {
     }
   });
 
+  it("can extend store without init state", () => {
+    const inheritedStore = stateStore.extend({
+      name: "inherited",
+    });
+
+    expect(inheritedStore.getState(s => s)).toMatchObject({
+      a: 1,
+      b: "string",
+      c: [0, { k: "second" }],
+      d: {
+        obj: true
+      }
+    });
+  });
+
   // it("throw error when change state directly", () => {
   //   function Counter() {
   //     const fullState = stateStore.useStore(s => s);
@@ -184,7 +199,7 @@ describe("init and create", () => {
 });
 
 describe("init and create in singleton mode", () => {
-  const cube = init({singleton: true});
+  const cube = init({ singleton: true });
 
   const stateStore = cube.createStore({
     name: "state",
@@ -214,16 +229,16 @@ describe("init and create in singleton mode", () => {
   });
 
   it("return exist store when extend store with duplicate name", () => {
-      const newStateStore = stateStore.extend({
-        name: "state",
-        state: {
-          b: 1
-        }
-      });
+    const newStateStore = stateStore.extend({
+      name: "state",
+      state: {
+        b: 1
+      }
+    });
 
-      expect(newStateStore).toBe(stateStore);
-      expect(newStateStore.getState(s=>s)).toEqual({a: 1});
-      expect(stateStore.getState(s=>s)).toEqual({a: 1});
+    expect(newStateStore).toBe(stateStore);
+    expect(newStateStore.getState(s => s)).toEqual({ a: 1 });
+    expect(stateStore.getState(s => s)).toEqual({ a: 1 });
   });
 
   it("return new store when extend store with new name", () => {
@@ -233,11 +248,36 @@ describe("init and create in singleton mode", () => {
         b: 1
       }
     });
-    
+
     expect(newStateStore).not.toBe(stateStore);
-    expect(newStateStore.getState(s=>s)).toEqual({a: 1, b:1});
-    expect(stateStore.getState(s=>s)).toEqual({a: 1});
+    expect(newStateStore.getState(s => s)).toEqual({ a: 1, b: 1 });
+    expect(stateStore.getState(s => s)).toEqual({ a: 1 });
+  });
+
 });
+
+describe("init with onCreate option", () => {
+  const storeList = [];
+  const cube = init({
+    onCreate(newStore) {
+      storeList.push(newStore);
+    }
+  });
+
+  it("can create store", () => {
+    const stateStore = cube.createStore({
+      name: "state",
+      state: {
+        a: 1,
+      },
+      extra: {
+        test: true
+      }
+    });
+
+    expect(storeList[0]).toBe(stateStore);
+    expect(storeList.length).toBe(1);
+  });
 
 });
 
