@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.4.0](https://github.com/daskyrk/cube-state/compare/v1.3.1...v1.4.0) (2021-04-23)
+
+
+### Features
+
+* add coverage test ([24eba19](https://github.com/daskyrk/cube-state/commit/24eba191924d0fcebc02be05c22eaf1afb970ff6))
+* tidy code and add code coverage ([#23](https://github.com/daskyrk/cube-state/issues/23)) ([5ebb0f6](https://github.com/daskyrk/cube-state/commit/5ebb0f68c9a627e84b1efe65662b218605c653a0))
+
 ### [1.3.1](https://github.com/daskyrk/cube-state/compare/v1.3.0...v1.3.1) (2021-04-22)
 
 
