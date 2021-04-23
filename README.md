@@ -7,7 +7,7 @@ English | [简体中文](./README-cn.md)
 
 [![npm version](https://img.shields.io/npm/v/cube-state.svg?logo=npm)](https://www.npmjs.com/package/cube-state)
 ![Bundle Size](https://badgen.net/bundlephobia/minzip/cube-state)
-[![codecov](https://codecov.io/gh/daskyrk/cube-state/branch/codecov/graph/badge.svg?token=5e086358-0ee3-429a-9793-73a396bcaf10)](https://codecov.io/gh/daskyrk/cube-state)
+[![codecov](https://codecov.io/gh/daskyrk/cube-state/branch/codecov/graph/badge.svg)](https://codecov.io/gh/daskyrk/cube-state)
 ![React](https://img.shields.io/npm/dependency-version/cube-state/peer/react?logo=react)
 
 ## Features
