@@ -108,7 +108,7 @@ function MsgList() {
 }
 ```
 
-### devtools
+### ~~devtools~~(deprecated)
 
 use redux devtools to watch data change detail
 

@@ -109,7 +109,7 @@ function MsgList() {
 }
 ```
 
-## devtools
+## ~~devtools~~(deprecated)
 
 使用 redux 扩展工具观察数据变化详情
 
