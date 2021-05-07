@@ -158,17 +158,14 @@ export default function init(initOpt: CubeState.InitOpt = {}) {
               }
             });
             await Promise.all(ps);
-            let result = null;
             let error = null;
-            try {
-              result = await originalEffect(
-                effectFn,
-                payload,
-                ...(extra || [])
-              );
-            } catch (e) { // make sure to execute effect hook
+            const result = await originalEffect(
+              effectFn,
+              payload,
+              ...(extra || [])
+            ).catch((e: Error) => { // make sure to execute effect hook
               error = e;
-            }
+            });
             ps = [];
             produce<any, any>(result, (res: any) => {
               for (const afterEffect of hookMap.afterEffect as Array<
