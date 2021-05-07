@@ -142,6 +142,7 @@ export default function init(initOpt: CubeState.InitOpt = {}) {
               ...customEffect,
               storeMap
             };
+            let error;
             let ps: Array<Promise<any>> = [];
             produce<any, any>(payload, (pay: any) => {
               for (const beforeEffect of hookMap.beforeEffect as Array<
@@ -162,7 +163,9 @@ export default function init(initOpt: CubeState.InitOpt = {}) {
               effectFn,
               payload,
               ...extra
-            );
+            )?.catch((e: Error)=>{
+              error = e
+            });
             ps = [];
             produce<any, any>(result, (res: any) => {
               for (const afterEffect of hookMap.afterEffect as Array<
@@ -179,6 +182,9 @@ export default function init(initOpt: CubeState.InitOpt = {}) {
               }
             });
             await Promise.all(ps);
+            if (error) {
+              throw error;
+            }
             return result;
           };
         });
