@@ -10,15 +10,8 @@ export default ({ use, createStore }) => {
     }
   });
 
-  function useSpace(store) {
-    const loadingSpace = loadingStore.useStore(s => s[store.name]) || {};
-    // add proxy to avoid return undefined in isLoading
-    const loadingSpaceProxy = new Proxy(loadingSpace, {
-      get: (target, propKey) => {
-        return !!Reflect.get(target, propKey);
-      }
-    });
-    return loadingSpaceProxy;
+  function useLoading(store, effectNames) {
+    return loadingStore.useStore((s) => effectNames.map((n) => (s[store.name] && s[store.name][n]) || false));
   }
 
   use({
@@ -32,6 +25,6 @@ export default ({ use, createStore }) => {
 
   return {
     ...loadingStore,
-    useSpace
+    useLoading
   };
 };

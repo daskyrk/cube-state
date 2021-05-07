@@ -100,13 +100,13 @@ import userStore from 'stores/user';
 
 function MsgList() {
   const { getMsgList } = userStore.effects;
-  const loading = loadingStore.useSpace(userStore);
+  const [effectALoading] = loadingStore.useLoading(userStore, ['effectA']);
 
   React.useEffect(() => {
     getMsgList();
   }, []);
 
-  return <Spin loading={loading.getMsgList}><div>msg list</div><Spin>
+  return <Spin loading={effectALoading}><div>msg list</div><Spin>
 }
 ```
 

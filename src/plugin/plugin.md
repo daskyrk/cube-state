@@ -9,7 +9,7 @@ import loadingStore from 'app/stores/loading';
 
 
 const App = () => {
-  const loading = loadingStore.useSpace(userStore);
+  const [effectALoading, effectBLoading] = loadingStore.useLoading(userStore, ['effectA', 'effectB']);
   return <Spin spinning={loading.loadingUserList}>user list</Spin>
 }
 ```

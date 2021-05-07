@@ -29,25 +29,25 @@ describe("plugin", () => {
   const { createStore, storeMap, use } = init();
   const loadingStore = initLoading({ use, createStore });
 
-  const countStore = createStore({
-    name: "count",
-    state: {
-      value: 0
-    },
-    effects: {
-      async setLater({ call, update }, newValue: number) {
-        const result = await call(() => sleep(100, newValue));
-        update({ value: result });
-      }
-    }
-  });
-
   it("loadingPlugin can auto toggle loading", async () => {
+    const countStore = createStore({
+      name: "count",
+      state: {
+        value: 0
+      },
+      effects: {
+        async setLater({ call, update }, newValue: number) {
+          const result = await call(() => sleep(100, newValue));
+          update({ value: result });
+        },
+      }
+    });
+
     const snapshot = [];
     function Counter() {
       const count = countStore.useStore(s => s.value);
-      const loading = loadingStore.useSpace(countStore);
-      snapshot.push([count, loading.setLater]);
+      const [setLaterLoading] = loadingStore.useLoading(countStore, ['setLater']);
+      snapshot.push([count, setLaterLoading]);
       return <div>count: {count}</div>;
     }
 
