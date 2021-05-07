@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.5.0](https://github.com/daskyrk/cube-state/compare/v1.4.0...v1.5.0) (2021-05-07)
+
+
+### Features
+
+* update loading plugin ([8e0006a](https://github.com/daskyrk/cube-state/commit/8e0006a7377eba72110851e390db80c518885b25))
+
+
+### Bug Fixes
+
+* not call after effect hook when effect throw error ([d6720e6](https://github.com/daskyrk/cube-state/commit/d6720e673f0d2cc33fdc1fba3e2fbbdaf4d564ef))
+
 ## [1.4.0](https://github.com/daskyrk/cube-state/compare/v1.3.1...v1.4.0) (2021-04-23)
 
 
