@@ -60,6 +60,41 @@ describe("plugin", () => {
     await waitFor(() => getByText("count: 1"));
   });
 
+  it("loadingPlugin can auto toggle loading when effect throw error", async () => {
+    const countStore = createStore({
+      name: "error-count",
+      state: {
+        value: 0
+      },
+      effects: {
+        async setLaterWithError({ call, update }, newValue: number) {
+          await call(() => sleep(100, newValue));
+          throw Error('oops');
+        },
+      }
+    });
+
+    const snapshot = [];
+    function Counter() {
+      const count = countStore.useStore(s => s.value);
+      const [setLaterLoading] = loadingStore.useLoading(countStore, ['setLaterWithError']);
+      snapshot.push([count, setLaterLoading]);
+      return <div>count: {count}</div>;
+    }
+
+    const { getByText } = render(<Counter />);
+    await waitFor(() => getByText("count: 0"));
+    expect(snapshot).toEqual([[0, false]]);
+
+    try {
+      await act(() => countStore.effects.setLaterWithError(1));
+    } catch (error) {
+      // do nothing
+    }
+    expect(snapshot).toEqual([[0, false], [0, true], [0, false]]);
+    await waitFor(() => getByText("count: 0"));
+  });
+
   it("run afterEffect after promise which returned by beforeEffect finish", async () => {
     const { createStore, storeMap, use } = init();
 
