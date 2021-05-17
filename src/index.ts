@@ -143,21 +143,25 @@ export default function init(initOpt: CubeState.InitOpt = {}) {
               storeMap
             };
             let ps: Array<Promise<any>> = [];
-            produce<any, any>(payload, (pay: any) => {
-              for (const beforeEffect of hookMap.beforeEffect as Array<
-                CubeState.BeforeEffectHook<MergedState>
-              >) {
-                const p = beforeEffect({
-                  storeName: newName,
-                  effectName: fnName,
-                  payload: pay,
-                  extra,
-                  ...effectFn
-                });
-                isPromise(p) && ps.push(p);
-              }
-            });
-            await Promise.all(ps);
+            if (originalEffect.length > 1) {
+              produce<any, any>(payload, (pay: any) => {
+                for (const beforeEffect of hookMap.beforeEffect as Array<
+                  CubeState.BeforeEffectHook<MergedState>
+                >) {
+                  const p = beforeEffect({
+                    storeName: newName,
+                    effectName: fnName,
+                    payload: pay,
+                    extra,
+                    ...effectFn
+                  });
+                  isPromise(p) && ps.push(p);
+                }
+              });
+              await Promise.all(ps);
+            } else if (payload !== undefined) {
+              console.warn('[cube-state] redundant arguments', payload)
+            }
             let error = null;
             const result = await originalEffect(
               effectFn,

@@ -725,6 +725,42 @@ describe("update and render", () => {
 
   });
 
+  it("execute effect with redundant arguments will log warning", async () => {
+    const obj = {} as any;
+    obj.obj = obj;
+
+    const argStore = createStore({
+      name: "arg",
+      state: {
+        arg: 0
+      },
+      effects: {
+        async redundantArg({ call, update }) {
+          update({ arg: 1 });
+        },
+      }
+    });
+
+    function Control() {
+      const arg = argStore.useStore(s => s.arg);
+
+      return (
+        <div>
+          <button onClick={argStore.effects.redundantArg}>test</button>
+          <div>{arg}</div>
+        </div>
+      );
+    }
+
+    const { getByText } = render(<Control />);
+
+    fireEvent.click(getByText("test"));
+    await waitFor(() =>
+      getByText("1")
+    );
+
+  });
+
   // it('can throw an error in reducer and effect', async () => {
   //   console.error = jest.fn()
 
