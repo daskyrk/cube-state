@@ -12,7 +12,7 @@ English | [简体中文](./README-cn.md)
 
 
 <div align="left">
-	<img src="./architecture.png" alt="architecture" width="666">
+	<img src="./architecture.png" alt="architecture">
 </div>
 
 ## Features

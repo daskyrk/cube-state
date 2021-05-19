@@ -12,7 +12,7 @@
 
 
 <div align="left">
-	<img src="./architecture.png" alt="architecture" width="666">
+	<img src="./architecture.png" alt="architecture">
 </div>
 
 ## 特性
