@@ -10,6 +10,11 @@ English | [简体中文](./README-cn.md)
 [![codecov](https://codecov.io/gh/daskyrk/cube-state/branch/codecov/graph/badge.svg)](https://codecov.io/gh/daskyrk/cube-state)
 ![React](https://img.shields.io/npm/dependency-version/cube-state/peer/react?logo=react)
 
+
+<div align="left">
+	<img src="./architecture.png" alt="architecture" width="666">
+</div>
+
 ## Features
 
 - Perfect Typescript support
@@ -60,8 +65,8 @@ export default createStore({
     count: 0
   },
   reducers: {
-    add(state) {
-      state.count += 1;
+    add(state, num: number) {
+      state.count += num;
     }
   },
   effects: {}
@@ -80,7 +85,7 @@ function App(props) {
   return (
     <div>
       <p>{value}</p>
-      <button onClick={() => counterStore.reducers.add()}>Increment</button>
+      <button onClick={() => counterStore.reducers.add(1)}>Increment</button>
     </div>
   );
 }
@@ -156,8 +161,9 @@ If the store file will be execute multiple times, eg. in module federation, it w
 
 ### Use in class components
 
-you have to wrap class component by functional component.
-will provide some util function later.
+Two ways:
+1. wrap class component by functional component.
+2. if you want to reuse connect logic, please use connectCube.
 
 ```tsx
 import counterStore from "stores/counter";
@@ -173,16 +179,45 @@ class Counter extends Component<IProps> {
     return (
       <div>
         <p>{value}</p>
-        <button onClick={() => add}>Increment</button>
+        <button onClick={() => add()}>Increment</button>
       </div>
     );
   }
 }
 
+// first way
 export default () => {
   const value = counterStore.useStore(s => s.count);
   return <Counter value={value} add={counterStore.reducers.add} />;
 };
+
+// second way
+type IMapper<P, M> = {
+  (props: Omit<P, keyof M>): M
+};
+
+interface IConnectComp<P> {
+  (p: P): JSX.Element
+}
+
+export function connectCube<P, M>(Comp: IConnectComp<P> | React.ComponentType<P>, mapper: IMapper<P, M>) {
+  return (props: Omit<P, keyof M>) => {
+    const storeProps = mapper(props);
+    const combinedProps = { ...props, ...storeProps } as any;
+    return <Comp {...combinedProps} />;
+  };
+}
+
+const Mapper = () => {
+  const value = counterStore.useStore(s => s.count);
+  const { add } = counterStore.reducers;
+  return {
+    value,
+    add,
+  };
+};
+
+connectCube(Counter, Mapper)
 ```
 
 ### Performance optimization

@@ -10,6 +10,11 @@
 [![codecov](https://codecov.io/gh/daskyrk/cube-state/branch/codecov/graph/badge.svg)](https://codecov.io/gh/daskyrk/cube-state)
 ![React](https://img.shields.io/npm/dependency-version/cube-state/peer/react?logo=react)
 
+
+<div align="left">
+	<img src="./architecture.png" alt="architecture" width="666">
+</div>
+
 ## 特性
 
 - 完美支持Typescript
@@ -62,8 +67,8 @@ export default createStore({
     count: 0
   },
   reducers: {
-    add(state) {
-      state.count += 1;
+    add(state, num: number) {
+      state.count += number;
     }
   },
   effects: {}
@@ -82,7 +87,7 @@ function App(props) {
   return (
     <div>
       <p>{value}</p>
-      <button onClick={() => counterStore.reducers.add()}>Increment</button>
+      <button onClick={() => counterStore.reducers.add(1)}>Increment</button>
     </div>
   );
 }
@@ -157,8 +162,9 @@ export function doubleCount() {
 如果 store 文件会被多次执行，例如在模块联邦中，这将很有用。
 
 ### 在类组件中使用
-
-现在只能使用函数式组件包裹一下类组件并传递prop。后面会提供工具方法优化。
+两种方式：
+1. 使用函数式组件包裹一下类组件并传递prop。
+2. 如需复用 connect 逻辑，可使用 connectCube 方法，传入纯组件以及提供所需 props 的 Mapper 组件
 
 ```tsx
 import counterStore from "stores/counter";
@@ -174,16 +180,45 @@ class Counter extends Component<IProps> {
     return (
       <div>
         <p>{value}</p>
-        <button onClick={() => add}>Increment</button>
+        <button onClick={() => add(1)}>Increment</button>
       </div>
     );
   }
 }
 
+// 方式一
 export default () => {
   const value = counterStore.useStore(s => s.count);
   return <Counter value={value} add={counterStore.reducers.add} />;
 };
+
+// 方式二
+type IMapper<P, M> = {
+  (props: Omit<P, keyof M>): M
+};
+
+interface IConnectComp<P> {
+  (p: P): JSX.Element
+}
+
+export function connectCube<P, M>(Comp: IConnectComp<P> | React.ComponentType<P>, mapper: IMapper<P, M>) {
+  return (props: Omit<P, keyof M>) => {
+    const storeProps = mapper(props);
+    const combinedProps = { ...props, ...storeProps } as any;
+    return <Comp {...combinedProps} />;
+  };
+}
+
+const Mapper = () => {
+  const value = counterStore.useStore(s => s.count);
+  const { add } = counterStore.reducers;
+  return {
+    value,
+    add,
+  };
+};
+
+connectCube(Counter, Mapper)
 ```
 
 ### 性能优化
