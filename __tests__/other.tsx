@@ -40,24 +40,47 @@ describe("plugin", () => {
           const result = await call(() => sleep(100, newValue));
           update({ value: result });
         },
+        async setLaterWithoutPayload({ call, update }) {
+          const result = await call(() => sleep(100, 6));
+          update({ value: result });
+        },
       }
     });
 
     const snapshot = [];
     function Counter() {
       const count = countStore.useStore(s => s.value);
-      const [setLaterLoading] = loadingStore.useLoading(countStore, ['setLater']);
-      snapshot.push([count, setLaterLoading]);
+      const [setLaterLoading, setLaterWithoutPayload] = loadingStore.useLoading(countStore, ['setLater', 'setLaterWithoutPayload']);
+      snapshot.push([count, setLaterLoading, setLaterWithoutPayload]);
       return <div>count: {count}</div>;
     }
 
     const { getByText } = render(<Counter />);
     await waitFor(() => getByText("count: 0"));
-    expect(snapshot).toEqual([[0, false]]);
+    expect(snapshot).toEqual([
+      [0, false, false]
+    ]);
 
     await act(() => countStore.effects.setLater(1));
-    expect(snapshot).toEqual([[0, false], [0, true], [1, true], [1, false]]);
+    expect(snapshot).toEqual([
+      [0, false, false],
+      [0, true, false],
+      [1, true, false],
+      [1, false, false]
+    ]);
     await waitFor(() => getByText("count: 1"));
+
+    await act(() => countStore.effects.setLaterWithoutPayload());
+    expect(snapshot).toEqual([
+      [0, false, false],
+      [0, true, false],
+      [1, true, false],
+      [1, false, false],
+      [1, false, true],
+      [6, false, true],
+      [6, false, false]
+    ]);
+    await waitFor(() => getByText("count: 6"));
   });
 
   it("loadingPlugin can auto toggle loading when effect throw error", async () => {

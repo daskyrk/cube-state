@@ -131,6 +131,7 @@ export default function init(initOpt: CubeState.InitOpt = {}) {
           const originalEffect = mergedEffects[fnName];
           // @ts-ignore
           _effects[fnName] = async function <A, B>(payload: A, ...extra: B[]) {
+            let _p = payload;
             const effectFn = {
               async call<A, ER>(fn: CubeState.CalledFn<A, ER>, payload: A) {
                 const res = await fn(payload);
@@ -143,29 +144,29 @@ export default function init(initOpt: CubeState.InitOpt = {}) {
               storeMap
             };
             let ps: Array<Promise<any>> = [];
-            if (originalEffect.length > 1) {
-              produce<any, any>(payload, (pay: any) => {
-                for (const beforeEffect of hookMap.beforeEffect as Array<
-                  CubeState.BeforeEffectHook<MergedState>
-                >) {
-                  const p = beforeEffect({
-                    storeName: newName,
-                    effectName: fnName,
-                    payload: pay,
-                    extra,
-                    ...effectFn
-                  });
-                  isPromise(p) && ps.push(p);
-                }
-              });
-              await Promise.all(ps);
-            } else if (payload !== undefined) {
-              console.warn('[cube-state] redundant arguments', payload)
+            if (originalEffect.length === 1 && _p !== undefined) { // Defined as no arguments but pass
+              console.warn('[cube-state] effect ' + fnName + ' do not need argument:', _p)
+              _p = {} as any; // if pass redundant arguments, set it to empty object to prevent immer error
             }
+            produce<any, any>(_p, (pay: any) => {
+              for (const beforeEffect of hookMap.beforeEffect as Array<
+                CubeState.BeforeEffectHook<MergedState>
+              >) {
+                const p = beforeEffect({
+                  storeName: newName,
+                  effectName: fnName,
+                  payload: pay,
+                  extra,
+                  ...effectFn
+                });
+                isPromise(p) && ps.push(p);
+              }
+            });
+            await Promise.all(ps);
             let error = null;
             const result = await originalEffect(
               effectFn,
-              payload,
+              _p,
               ...(extra || [])
             ).catch((e: Error) => { // make sure to execute effect hook
               error = e;
@@ -178,7 +179,7 @@ export default function init(initOpt: CubeState.InitOpt = {}) {
                 const p = afterEffect({
                   storeName: newName,
                   effectName: fnName,
-                  payload,
+                  payload: _p,
                   result: res,
                   ...effectFn
                 });
