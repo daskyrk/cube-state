@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.5.3](https://github.com/daskyrk/cube-state/compare/v1.5.2...v1.5.3) (2021-07-01)
+
+
+### Bug Fixes
+
+* optional argument is not include in fn.length ([c9ea9ff](https://github.com/daskyrk/cube-state/commit/c9ea9ffccc455f6d81117dad38d2f1e9318a77a5))
+
 ### [1.5.2](https://github.com/daskyrk/cube-state/compare/v1.5.1...v1.5.2) (2021-06-03)
 
 
