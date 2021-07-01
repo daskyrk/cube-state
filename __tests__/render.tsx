@@ -761,6 +761,36 @@ describe("update and render", () => {
 
   });
 
+  it("execute effect with optional argument and default value", async () => {
+    const obj = {} as any;
+    obj.obj = obj;
+    const records = [];
+
+    const payloadStore = createStore({
+      name: "payload",
+      state: {
+        payloadWithDefault: null,
+      },
+      effects: {
+        async defaultPayload({ call, update }, payloadWithDefault: object = {}) {
+          update({ payloadWithDefault });
+        },
+      }
+    });
+
+    expect(payloadStore.getState(s => s.payloadWithDefault)).toEqual(null);
+
+    await payloadStore.effects.defaultPayload();
+    expect(payloadStore.getState(s => s.payloadWithDefault)).toEqual({});
+
+    await payloadStore.effects.defaultPayload({ a: 1 });
+    expect(payloadStore.getState(s => s.payloadWithDefault)).toEqual({ a: 1 });
+
+    await payloadStore.effects.defaultPayload({ b: 1 });
+    expect(payloadStore.getState(s => s.payloadWithDefault)).toEqual({ b: 1 });
+
+  });
+
   // it('can throw an error in reducer and effect', async () => {
   //   console.error = jest.fn()
 

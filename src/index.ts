@@ -144,9 +144,9 @@ export default function init(initOpt: CubeState.InitOpt = {}) {
               storeMap
             };
             let ps: Array<Promise<any>> = [];
-            if (originalEffect.length === 1 && _p !== undefined) { // Defined as no arguments but pass
-              console.warn('[cube-state] effect ' + fnName + ' do not need argument:', _p)
-              _p = {} as any; // if pass redundant arguments, set it to empty object to prevent immer error
+            if (!isProd &&  _p && typeof (_p as any).stopPropagation === 'function') { //
+              console.warn('[cube-state] do not pass event object to effect ' + fnName);
+              _p = {} as any;
             }
             produce<any, any>(_p, (pay: any) => {
               for (const beforeEffect of hookMap.beforeEffect as Array<
