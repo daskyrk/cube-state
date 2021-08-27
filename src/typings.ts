@@ -4,7 +4,7 @@ export declare namespace CubeState {
     effects: Record<string, Function>;
     reducers: Record<string, Function>;
     useStore: Function;
-    getState: Function;
+    getState: <P>(selector: StateSelector<any, P>) => P;
     [k: string]: any;
   }
 
