@@ -6,9 +6,10 @@
 > 一个基于 Hooks 的 React 状态管理库，灵感来自于 [stamen](https://github.com/forsigner/stamen)
 
 [![npm version](https://img.shields.io/npm/v/cube-state.svg?logo=npm)](https://www.npmjs.com/package/cube-state)
-![Bundle Size](https://badgen.net/bundlephobia/minzip/cube-state)
-[![codecov](https://codecov.io/gh/daskyrk/cube-state/branch/codecov/graph/badge.svg)](https://codecov.io/gh/daskyrk/cube-state)
 ![React](https://img.shields.io/npm/dependency-version/cube-state/peer/react?logo=react)
+![Types Include](https://badgen.net/npm/types/tslib)
+![Bundle Size](https://badgen.net/badgesize/gzip/daskyrk/cube-state/master/src/index.ts)
+[![codecov](https://codecov.io/gh/daskyrk/cube-state/branch/codecov/graph/badge.svg)](https://codecov.io/gh/daskyrk/cube-state)
 
 
 <div align="left">
