@@ -3,7 +3,7 @@
 
 # cube-state
 
-> 一个基于 Hooks 的React状态管理库，灵感来自于 [stamen](https://github.com/forsigner/stamen)
+> 一个基于 Hooks 的 React 状态管理库，灵感来自于 [stamen](https://github.com/forsigner/stamen)
 
 [![npm version](https://img.shields.io/npm/v/cube-state.svg?logo=npm)](https://www.npmjs.com/package/cube-state)
 ![Bundle Size](https://badgen.net/bundlephobia/minzip/cube-state)
@@ -12,13 +12,13 @@
 
 
 <div align="left">
-	<img src="./architecture.png" alt="architecture">
+	<img src="./architecture.svg" alt="architecture">
 </div>
 
 ## 特性
 
-- 完美支持Typescript
-- 类似dva的API和组织结构
+- 完美支持 Typescript
+- 类似 dva 的 API 和组织结构
 - 很小
 
 ## 线上试一把
@@ -37,7 +37,7 @@ yarn add cube-state
 
 ### 初始化配置
 
-首先，做一些初始化的操作，比如扩展effect的第一个参数，或者对每个新建的store做一些操作。高级用法请见 [高级用法](#高级用法).
+首先，做一些初始化的操作，比如扩展 effect 的第一个参数，或者对每个新建的 store 做一些操作。高级用法请见 [高级用法](#高级用法).
 
 **init-cube.ts**
 
@@ -144,7 +144,7 @@ const cube = init({
 
 ### 使用数据而不观察变化
 
-当store变化时，如果不想重渲染组件，使用 `getState` 而不是 `useStore`
+当 store 变化时，如果不想重渲染组件，使用 `getState` 而不是 `useStore`
 
 > `getState` 不是 Hook，所以可以在任何地方使用
 
